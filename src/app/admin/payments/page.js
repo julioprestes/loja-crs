@@ -30,9 +30,9 @@ export default function Tasks() {
   const [loadingSave, SetLoadingSave] = useState(false);
   
   
-  const buscarCategoria = async () => {
+  const buscarPagamento = async () => {
       try {
-        const response = await api.get('/categories')
+        const response = await api.get('/payments')
         setTasks(response.data.data)
       } catch (error) {
         
@@ -42,7 +42,7 @@ export default function Tasks() {
   const router = useRouter();
 
   useEffect(() => {
-    buscarCategoria();
+    buscarPagamento();
   }, []);
   
 //   useEffect(() => {
@@ -51,7 +51,7 @@ export default function Tasks() {
 //       if (!valido) {
 //         router.push('/');
 //       } else {
-//         await buscarCategoria();
+//         await buscarPagamento();
 //       }
 //     };
 
@@ -74,20 +74,20 @@ export default function Tasks() {
       SetLoadingSave(true)
       if (!input.trim()) return;
       if (editingIndex !== null) {
-        const response = await api.patch(`/categories/${editingIndex}`, {
+        const response = await api.patch(`/payments/${editingIndex}`, {
           name: input,
         });
-        await buscarCategoria();
+        await buscarPagamento();
         setInput('');
       } else {
-        const response = await api.post('/categories', {
+        const response = await api.post('/payments', {
           name: input,
         });
         toaster.create({
-          title: 'Categories criado com sucesso.',
+          title: 'Pagamento criado com sucesso.',
           type: 'success'
         })
-        await buscarCategoria();
+        await buscarPagamento();
       }
       setIsDialogOpen(false)
       setInput('');
@@ -95,7 +95,7 @@ export default function Tasks() {
     } catch (error) {
       console.log(error.response?.data || error.message);
       toaster.create({
-        title: error.response?.data?.message || 'Erro ao criar categories.',
+        title: error.response?.data?.message || 'Erro ao criar pagamento.',
         type: 'error'
       });
       SetLoadingSave(false);
@@ -117,22 +117,22 @@ export default function Tasks() {
 
   const excluirTask = async (id) => {
     try {
-      if (confirm("Deseja excluir o categories?")) {
+      if (confirm("Deseja excluir o pagamento?")) {
       const taskDeletar = tasks.find((task) => task.id === id);
-      await api.delete(`/categories/${taskDeletar.id}`); 
-      const taskExcluido = tasks.filter(categories => categories.id !== taskDeletar.id);
+      await api.delete(`/payments/${taskDeletar.id}`); 
+      const taskExcluido = tasks.filter(payments => payments.id !== taskDeletar.id);
       if (tasksAtuais.length === 1 && currentPage > 1) {
         setCurrentPage(currentPage - 1);
       }
       toaster.create({
-        title: 'Categories excluido com sucesso.',
+        title: 'Pagamento excluido com sucesso.',
         type: 'success'
       })
       setTasks(taskExcluido);
       }
     } catch (error) {
       toaster.create({
-        title: 'Erro ao excluir categories.',
+        title: 'Erro ao excluir pagamento.',
         type: 'error'
       })
     }
@@ -140,9 +140,9 @@ export default function Tasks() {
 
   return (
     <>
-      <TrocaCrud currentPage="/admin/categories" />
+      <TrocaCrud currentPage="/admin/payments" />
       <Box p={8}>
-        <Heading mb={4}> CRUD Categorias </Heading>
+        <Heading mb={4}> CRUD Pagamentos </Heading>
         <Grid templateColumns="repeat(4, 1fr)" gap={6} ml={10} mr={-12}>
           <GridItem colSpan={3} ml={9}>
             <InputPesquisa
@@ -158,11 +158,11 @@ export default function Tasks() {
                 mb={4}
                 l={2}
             > 
-                Criar Categoria
+                Criar Pagamento
             </Button>
             <DialogCreate
-                headers={[editingIndex !== null ? 'Editar Categories' : 'Criar Categories']}
-                buttonName={[editingIndex !== null ? 'Editar Categories' : 'Criar Categories']}
+                headers={[editingIndex !== null ? 'Editar Pagamento' : 'Criar Pagamento']}
+                buttonName={[editingIndex !== null ? 'Editar Pagamento' : 'Criar Pagamento']}
                 input={input}
                 setInput={setInput}
                 submit={criarTask}

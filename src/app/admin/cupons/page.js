@@ -2,7 +2,7 @@
 import InputPesquisa from "@/components/InputPesquisa";
 import TabelaCrud from "@/components/TabelaCrud";
 import PaginationTabela from "@/components/PaginationTabela";
-import DialogCreate from "@/components/DialogCreate";
+import DialogCupom from "@/components/DialogCupom";
 import SelectPage from "@/components/SelectPage";
 import { 
   Box,
@@ -22,6 +22,9 @@ import TrocaCrud from "@/components/TrocaCrud";
 export default function Tasks() {
   const [tasks, setTasks] = useState([]);
   const [input, setInput] = useState('');
+  const [type, setType] = useState('');
+  const [value, setValue] = useState(null);
+  const [uses, setUses] = useState(null);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const [editingIndex, setEditingIndex] = useState(null);
@@ -30,9 +33,9 @@ export default function Tasks() {
   const [loadingSave, SetLoadingSave] = useState(false);
   
   
-  const buscarCategoria = async () => {
+  const buscarCupom = async () => {
       try {
-        const response = await api.get('/categories')
+        const response = await api.get('/admin/cupons')
         setTasks(response.data.data)
       } catch (error) {
         
@@ -42,7 +45,7 @@ export default function Tasks() {
   const router = useRouter();
 
   useEffect(() => {
-    buscarCategoria();
+    buscarCupom();
   }, []);
   
 //   useEffect(() => {
@@ -51,7 +54,7 @@ export default function Tasks() {
 //       if (!valido) {
 //         router.push('/');
 //       } else {
-//         await buscarCategoria();
+//         await buscarCupom();
 //       }
 //     };
 
@@ -59,7 +62,7 @@ export default function Tasks() {
 //   }, []);
   
   const filteredTasks = tasks.filter(task =>
-    task.name.toLowerCase().includes(searchTerm.toLowerCase())
+    task.code.toLowerCase().includes(searchTerm.toLowerCase())
   );
   useEffect(() => {
     setCurrentPage(1);
@@ -74,28 +77,37 @@ export default function Tasks() {
       SetLoadingSave(true)
       if (!input.trim()) return;
       if (editingIndex !== null) {
-        const response = await api.patch(`/categories/${editingIndex}`, {
-          name: input,
+        const response = await api.patch(`/cupons/${editingIndex}`, {
+          code: input,
+          type: type,
+          value: value,
+          uses: uses
         });
-        await buscarCategoria();
+        await buscarCupom();
         setInput('');
       } else {
-        const response = await api.post('/categories', {
-          name: input,
+        const response = await api.post('/cupons', {
+            code: input,
+            type: type,
+            value: value,
+            uses: uses
         });
         toaster.create({
-          title: 'Categories criado com sucesso.',
+          title: 'Cupom criado com sucesso.',
           type: 'success'
         })
-        await buscarCategoria();
+        await buscarCupom();
       }
       setIsDialogOpen(false)
       setInput('');
+      setType('');
+      setValue(null);
+      setUses(null);
       SetLoadingSave(false)
     } catch (error) {
       console.log(error.response?.data || error.message);
       toaster.create({
-        title: error.response?.data?.message || 'Erro ao criar categories.',
+        title: error.response?.data?.message || 'Erro ao criar cupom.',
         type: 'error'
       });
       SetLoadingSave(false);
@@ -110,29 +122,32 @@ export default function Tasks() {
       return;
     }
   
-    setInput(taskEditar.name || '');
+    setInput(taskEditar.code || '');
+    setType(taskEditar.type || '');
+    setValue(taskEditar.value || '');
+    setUses(taskEditar.uses || '');
     setEditingIndex(taskEditar.id || null);
     setIsDialogOpen(true);
   };
 
   const excluirTask = async (id) => {
     try {
-      if (confirm("Deseja excluir o categories?")) {
+      if (confirm("Deseja excluir o cupom?")) {
       const taskDeletar = tasks.find((task) => task.id === id);
-      await api.delete(`/categories/${taskDeletar.id}`); 
-      const taskExcluido = tasks.filter(categories => categories.id !== taskDeletar.id);
+      await api.delete(`/cupons/${taskDeletar.id}`); 
+      const taskExcluido = tasks.filter(cupons => cupons.id !== taskDeletar.id);
       if (tasksAtuais.length === 1 && currentPage > 1) {
         setCurrentPage(currentPage - 1);
       }
       toaster.create({
-        title: 'Categories excluido com sucesso.',
+        title: 'Cupom excluido com sucesso.',
         type: 'success'
       })
       setTasks(taskExcluido);
       }
     } catch (error) {
       toaster.create({
-        title: 'Erro ao excluir categories.',
+        title: 'Erro ao excluir cupom.',
         type: 'error'
       })
     }
@@ -140,9 +155,9 @@ export default function Tasks() {
 
   return (
     <>
-      <TrocaCrud currentPage="/admin/categories" />
+      <TrocaCrud currentPage="/cupons" />
       <Box p={8}>
-        <Heading mb={4}> CRUD Categorias </Heading>
+        <Heading mb={4}> CRUD Cupons </Heading>
         <Grid templateColumns="repeat(4, 1fr)" gap={6} ml={10} mr={-12}>
           <GridItem colSpan={3} ml={9}>
             <InputPesquisa
@@ -158,20 +173,29 @@ export default function Tasks() {
                 mb={4}
                 l={2}
             > 
-                Criar Categoria
+                Criar Cupom
             </Button>
-            <DialogCreate
-                headers={[editingIndex !== null ? 'Editar Categories' : 'Criar Categories']}
-                buttonName={[editingIndex !== null ? 'Editar Categories' : 'Criar Categories']}
+            <DialogCupom
+                headers={[editingIndex !== null ? 'Editar Cupom' : 'Criar Cupom']}
+                buttonName={[editingIndex !== null ? 'Editar Cupom' : 'Criar Cupom']}
                 input={input}
                 setInput={setInput}
+                type={type}
+                setType={setType}
+                value={value}
+                setValue={setValue}
+                uses={uses}
+                setUses={setUses}
                 submit={criarTask}
                 editingIndex={editingIndex}
                 isOpen={isDialogOpen}
                 onClose={() => {
                   setIsDialogOpen(false);
                   setEditingIndex(null);
-                  setInput('');
+                  setInput(''); 
+                  setType(''); 
+                  setValue(null);
+                  setUses(null);
                 }}
                 loadingSave={loadingSave}
             />
@@ -185,7 +209,10 @@ export default function Tasks() {
             acoes={true}
             headers={[
               {name: 'ID', value: 'id'},
-              {name: 'Nome', value: 'name'},
+              {name: 'Código', value: 'code'},
+              {name: 'Tipo', value: 'type'},
+              {name: 'Valor', value: 'value'},
+              {name: 'Usos', value: 'uses'},
             ]}
           />
           <Grid templateColumns="repeat(4, 1fr)">

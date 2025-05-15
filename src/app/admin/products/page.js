@@ -2,7 +2,7 @@
 import InputPesquisa from "@/components/InputPesquisa";
 import TabelaCrud from "@/components/TabelaCrud";
 import PaginationTabela from "@/components/PaginationTabela";
-import DialogProduto from "@/components/DialogProduto";
+import DialogProducts from "@/components/DialogProducts";
 import SelectPage from "@/components/SelectPage";
 import { 
   Box,
@@ -11,7 +11,8 @@ import {
   Button,
   Grid,
   GridItem,
-  Image
+  Image,
+  Flex
 } from "@chakra-ui/react"
 import { useState, useEffect } from "react";
 import api from "@/utils/axios";
@@ -64,7 +65,7 @@ export default function Tasks() {
 //   }, []);
   
   const filteredTasks = tasks.filter(task =>
-    task.nome.toLowerCase().includes(searchTerm.toLowerCase())
+    task.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
   useEffect(() => {
     setCurrentPage(1);
@@ -144,9 +145,9 @@ export default function Tasks() {
     }
   
     setInput(taskEditar.name || '');
-    setDescricao(taskEditar.description || '');
-    setAutor(taskEditar.price || null);
-    setDuracao(taskEditar.idCategory || null);
+    setDescription(taskEditar.description || '');
+    setPrice(taskEditar.price || null);
+    setIdCategory(taskEditar.idCategory || null);
     setFile(null);
     setEditingIndex(taskEditar.id || null);
     setIsDialogOpen(true);
@@ -200,7 +201,7 @@ export default function Tasks() {
             > 
                 Criar Produto
             </Button>
-            <DialogProduto
+            <DialogProducts
                 headers={[editingIndex !== null ? 'Editar produto' : 'Criar produto']}
                 buttonName={[editingIndex !== null ? 'Editar produto' : 'Criar produto']}
                 input={input}
@@ -234,12 +235,14 @@ export default function Tasks() {
             items={tasksAtuais.map(task => ({
               ...task,
               image: (
-                <Image
-                  rounded="md"
-                  src={`http://localhost:3333${task.image.replace(/^.*\/public/, '')}`} 
-                  alt={`Imagem do produto ${task.nome}`} 
-                  style={{ width: '70px', height: '100px', objectFit: 'cover' }} 
-                />
+                <Flex justify="center" align="center" h="100%">
+                  <Image
+                    rounded="md"
+                    src={`http://localhost:3333${task.image.replace(/^.*\/public/, '')}`} 
+                    alt={`Imagem do produto ${task.name}`} 
+                    style={{ width: '120px', height: '80px', objectFit: 'cover' }} 
+                  />
+                </Flex>
               )
             }))}
             onEdit={editarTask}
@@ -249,7 +252,7 @@ export default function Tasks() {
               {name: 'ID', value: 'id'},
               {name: 'Nome', value: 'name'},
               {name: 'Preço', value: 'price'},
-              {name: 'Autor', value: 'autor'},
+              {name: 'Descrição', value: 'description'},
               {name: 'ID da Categoria', value: 'idCategory'},
               {name: 'Imagem do Produto', value: 'image'}
             ]}

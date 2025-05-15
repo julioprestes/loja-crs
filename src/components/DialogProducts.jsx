@@ -4,7 +4,7 @@ import { HiUpload } from "react-icons/hi";
 import { MdCheck, MdAdd } from "react-icons/md";
 import { FileUpload } from "@chakra-ui/react";
 
-export default function DialogFilme ({
+export default function DialogProduto ({
     headers,
     input,
     setInput,
@@ -16,7 +16,6 @@ export default function DialogFilme ({
     setIdCategory,
     file,
     setFile,
-    imagemAtual,
     submit,
     editingIndex,
     isOpen,
@@ -50,39 +49,39 @@ export default function DialogFilme ({
             <Dialog.Body>
               <VStack spacing={4} mb={4}>
                 <Input
-                  placeholder="Digite o nome do Filme!"
+                  placeholder="Digite o nome do Produto!"
                   variant="subtle"
                   mr={2}
                   value={input}
                   onChange={(valor) => setInput(valor.target.value)}
                 />
                 <Input
-                  placeholder="Digite a descrição do filme!"
+                  placeholder="Digite a descrição do Produto!"
                   variant="subtle"
                   mr={2}
-                  value={descricao}
-                  onChange={(valor) => setDescricao(valor.target.value)}
+                  value={description}
+                  onChange={(valor) => setDescription(valor.target.value)}
                 />
                 <Input
-                  placeholder="Digite o nome do autor do Filme!"
+                  placeholder="Digite o valor do Produto!"
                   variant="subtle"
                   mr={2}
-                  value={autor}
-                  onChange={(valor) => setAutor(valor.target.value)}
+                  value={price}
+                  onChange={(valor) => setPrice(valor.target.value)}
                 />
                 <Input
-                  placeholder="Digite a duração do filme! (Em minutos)"
+                  placeholder="Digite o ID da Categoria do Produto!"
                   variant="subtle"
                   mr={2}
-                  value={duracao}
-                  onChange={(valor) => setDuracao(valor.target.value)}
+                  value={idCategory}
+                  onChange={(valor) => setIdCategory(valor.target.value)}
                 />
                 <FileUpload.Root>
                     <FileUpload.HiddenInput onChange={(e) => setFile(e.target.files[0])} />
                     <FileUpload.Dropzone>
                         <FileUpload.Trigger asChild>
                         <Button variant="outline" size="sm">
-                            <HiUpload /> Upload da Capa do Filme
+                            <HiUpload /> Upload da Imagem
                         </Button>
                         </FileUpload.Trigger>
                         {file && <Text mt={2}>Arquivo selecionado: {file.name}</Text>}

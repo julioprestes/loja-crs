@@ -23,8 +23,8 @@ export default function Tasks() {
   const [tasks, setTasks] = useState([]);
   const [input, setInput] = useState('');
   const [type, setType] = useState('');
-  const [value, setValue] = useState(null);
-  const [uses, setUses] = useState(null);
+  const [value, setValue] = useState('');
+  const [uses, setUses] = useState('');
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const [editingIndex, setEditingIndex] = useState(null);
@@ -35,7 +35,7 @@ export default function Tasks() {
   
   const buscarCupom = async () => {
       try {
-        const response = await api.get('/admin/cupons')
+        const response = await api.get('/cupons')
         setTasks(response.data.data)
       } catch (error) {
         
@@ -80,8 +80,8 @@ export default function Tasks() {
         const response = await api.patch(`/cupons/${editingIndex}`, {
           code: input,
           type: type,
-          value: value,
-          uses: uses
+          value: value === '' ? 0 : value,
+          uses: uses === '' ? 999 : uses
         });
         await buscarCupom();
         setInput('');
@@ -89,8 +89,8 @@ export default function Tasks() {
         const response = await api.post('/cupons', {
             code: input,
             type: type,
-            value: value,
-            uses: uses
+            value: value === '' ? 0 : value,
+            uses: uses === '' ? 999 : uses
         });
         toaster.create({
           title: 'Cupom criado com sucesso.',
@@ -101,8 +101,8 @@ export default function Tasks() {
       setIsDialogOpen(false)
       setInput('');
       setType('');
-      setValue(null);
-      setUses(null);
+      setValue('');
+      setUses('');
       SetLoadingSave(false)
     } catch (error) {
       console.log(error.response?.data || error.message);
@@ -124,8 +124,8 @@ export default function Tasks() {
   
     setInput(taskEditar.code || '');
     setType(taskEditar.type || '');
-    setValue(taskEditar.value || '');
-    setUses(taskEditar.uses || '');
+    setValue(taskEditar.value ?? '');
+    setUses(taskEditar.uses ?? '');
     setEditingIndex(taskEditar.id || null);
     setIsDialogOpen(true);
   };
@@ -155,7 +155,7 @@ export default function Tasks() {
 
   return (
     <>
-      <TrocaCrud currentPage="/cupons" />
+      <TrocaCrud currentPage="/admin/cupons" />
       <Box p={8}>
         <Heading mb={4}> CRUD Cupons </Heading>
         <Grid templateColumns="repeat(4, 1fr)" gap={6} ml={10} mr={-12}>
@@ -194,8 +194,8 @@ export default function Tasks() {
                   setEditingIndex(null);
                   setInput(''); 
                   setType(''); 
-                  setValue(null);
-                  setUses(null);
+                  setValue('');
+                  setUses('');
                 }}
                 loadingSave={loadingSave}
             />

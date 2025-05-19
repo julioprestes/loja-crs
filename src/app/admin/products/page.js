@@ -25,8 +25,9 @@ export default function Tasks() {
   const [tasks, setTasks] = useState([]);
   const [input, setInput] = useState('');
   const [description, setDescription] = useState('');
-  const [price, setPrice] = useState(null);
+  const [price, setPrice] = useState('');
   const [idCategory, setIdCategory] = useState(null);
+  const [categories, setCategories] = useState([]);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const [editingIndex, setEditingIndex] = useState(null);
@@ -43,12 +44,24 @@ export default function Tasks() {
         
       }
   }
+
+const buscarCategorias = async () => {
+  try {
+    const response = await api.get('/categories');
+    setCategories(response.data.data);
+    console.log("Categorias carregadas:", response.data.data); 
+  } catch (error) {
+    console.log("Erro ao buscar categorias:", error);
+  }
+};
   
   const router = useRouter();
 
 
   useEffect(() => {
     buscarProduto();
+    buscarCategorias();
+
   }, []);
 
 //   useEffect(() => {
@@ -122,7 +135,7 @@ export default function Tasks() {
         setIsDialogOpen(false);
         setInput("");
         setDescription("");
-        setPrice(null);
+        setPrice('');
         setIdCategory(null);
         setFile(null); 
         SetLoadingSave(false);
@@ -146,7 +159,7 @@ export default function Tasks() {
   
     setInput(taskEditar.name || '');
     setDescription(taskEditar.description || '');
-    setPrice(taskEditar.price || null);
+    setPrice(taskEditar.price ?? '');
     setIdCategory(taskEditar.idCategory || null);
     setFile(null);
     setEditingIndex(taskEditar.id || null);
@@ -213,6 +226,7 @@ export default function Tasks() {
                 setPrice={setPrice}
                 idCategory={idCategory}
                 setIdCategory={setIdCategory}
+                categories={categories}
                 setFile={setFile}
                 submit={criarTask}
                 editingIndex={editingIndex}
@@ -222,7 +236,7 @@ export default function Tasks() {
                   setEditingIndex(null);
                   setInput('');
                   setDescription('');
-                  setPrice(null);
+                  setPrice('');
                   setIdCategory(null);
                   setFile(null);
                 }}
@@ -234,6 +248,7 @@ export default function Tasks() {
           <TabelaCrud
             items={tasksAtuais.map(task => ({
               ...task,
+              idCategory: categories.find(cat => String(cat.id) === String(task.idCategory))?.name || task.idCategory,
               image: (
                 <Flex justify="center" align="center" h="100%">
                   <Image
@@ -253,7 +268,7 @@ export default function Tasks() {
               {name: 'Nome', value: 'name'},
               {name: 'Preço', value: 'price'},
               {name: 'Descrição', value: 'description'},
-              {name: 'ID da Categoria', value: 'idCategory'},
+              {name: 'Categoria', value: 'idCategory'},
               {name: 'Imagem do Produto', value: 'image'}
             ]}
           />

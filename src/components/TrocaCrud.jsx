@@ -26,13 +26,13 @@ export default function TrocaCrud({ currentPage }) {
       <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
         Abrir Menu
       </Button>
-      <Drawer.Root open={open} onOpenChange={(e) => setOpen(e.open)}>
+      <Drawer.Root open={open} onOpenChange={(e) => setOpen(e.open)} placement={"start"}>
         <Portal>
           <Drawer.Backdrop />
           <Drawer.Positioner>
             <Drawer.Content>
               <Drawer.Header>
-                <Drawer.Title>Menu de Navegação</Drawer.Title>
+                <Drawer.Title>Menu Admin</Drawer.Title>
               </Drawer.Header>
               <Drawer.Body>
                 <Flex direction="column" gap={2}>

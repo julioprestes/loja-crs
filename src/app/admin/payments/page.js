@@ -161,7 +161,7 @@ export default function Tasks() {
                 Criar Pagamento
             </Button>
             <DialogCreate
-                headers={[editingIndex !== null ? 'Editar Pagamento' : 'Criar Pagamento']}
+                headers={[editingIndex !== null ? 'Editar Tipo de Pagamento' : 'Criar Tipo de Pagamento']}
                 buttonName={[editingIndex !== null ? 'Editar Pagamento' : 'Criar Pagamento']}
                 input={input}
                 setInput={setInput}

@@ -1,8 +1,9 @@
 import React from "react";
-import { Dialog, Portal, VStack, Flex, Button, CloseButton, Input, Text } from "@chakra-ui/react";
+import { Dialog, Portal, VStack, Flex, Button, CloseButton, Input, Text, Select, createListCollection } from "@chakra-ui/react";
 import { HiUpload } from "react-icons/hi";
 import { MdCheck, MdAdd } from "react-icons/md";
 import { FileUpload } from "@chakra-ui/react";
+import { useRef } from "react"
 
 export default function DialogProduto ({
     headers,
@@ -14,6 +15,7 @@ export default function DialogProduto ({
     setPrice,
     idCategory,
     setIdCategory,
+    categories,
     file,
     setFile,
     submit,
@@ -22,6 +24,9 @@ export default function DialogProduto ({
     onClose,
     loadingSave
 }) {
+
+  const contentRef = useRef(null);
+
   const handleSubmit = () => {
     const formData = new FormData();
     formData.append("name", input);
@@ -35,13 +40,22 @@ export default function DialogProduto ({
     onClose();
   };
 
+  const categoriesCollection = createListCollection({
+    items: Array.isArray(categories)
+      ? categories.map(cat => ({
+          name: cat.name,
+          value: String(cat.id),
+        }))
+      : [],
+  });
+
   return (
     <Dialog.Root open={isOpen} onClose={onClose}>
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner>
           <Dialog.Content>
-            <Dialog.Header>
+            <Dialog.Header ref={contentRef}>
               {headers.map((header) => (
                 <Dialog.Title key={header}>{header}</Dialog.Title>
               ))}
@@ -69,13 +83,36 @@ export default function DialogProduto ({
                   value={price}
                   onChange={(valor) => setPrice(valor.target.value)}
                 />
-                <Input
-                  placeholder="Digite o ID da Categoria do Produto!"
-                  variant="subtle"
-                  mr={2}
-                  value={idCategory}
-                  onChange={(valor) => setIdCategory(valor.target.value)}
-                />
+                <Select.Root
+                  collection={categoriesCollection}
+                  size="sm"
+                  width="100%"
+                  value={idCategory ? [String(idCategory)] : []}
+                  onValueChange={value => setIdCategory(value.value[0])}
+                >
+                  <Select.HiddenSelect />
+                  <Select.Label>Categoria</Select.Label>
+                  <Select.Control>
+                    <Select.Trigger>
+                      <Select.ValueText placeholder="Selecione a categoria" />
+                    </Select.Trigger>
+                    <Select.IndicatorGroup>
+                      <Select.Indicator />
+                    </Select.IndicatorGroup>
+                  </Select.Control>
+                  <Portal container={contentRef}>
+                    <Select.Positioner>
+                      <Select.Content>
+                        {categoriesCollection.items.map((cat) => (
+                          <Select.Item item={cat} key={cat.value}>
+                            {cat.name}
+                            <Select.ItemIndicator />
+                          </Select.Item>
+                        ))}
+                      </Select.Content>
+                    </Select.Positioner>
+                  </Portal>
+                </Select.Root>
                 <FileUpload.Root>
                     <FileUpload.HiddenInput onChange={(e) => setFile(e.target.files[0])} />
                     <FileUpload.Dropzone>

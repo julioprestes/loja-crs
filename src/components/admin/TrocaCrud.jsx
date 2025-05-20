@@ -10,6 +10,8 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import NextLink from "next/link";
+import { MdMenu } from "react-icons/md"; 
+
 
 export default function TrocaCrud({ currentPage }) {
   const [open, setOpen] = useState(false);
@@ -19,12 +21,13 @@ export default function TrocaCrud({ currentPage }) {
     { href: "/admin/payments", label: "Crud Pagamentos" },
     { href: "/admin/cupons", label: "Crud Cupons" },
     { href: "/admin/products", label: "Crud Produtos" },
+    { href: "/admin/orders", label: "Crud Pedidos" },
   ];
 
   return (
     <>
       <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
-        Abrir Menu
+        <MdMenu/>
       </Button>
       <Drawer.Root open={open} onOpenChange={(e) => setOpen(e.open)} placement={"start"}>
         <Portal>

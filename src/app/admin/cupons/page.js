@@ -1,9 +1,9 @@
 'use client';
-import InputPesquisa from "@/components/InputPesquisa";
-import TabelaCrud from "@/components/TabelaCrud";
-import PaginationTabela from "@/components/PaginationTabela";
-import DialogCupom from "@/components/DialogCupom";
-import SelectPage from "@/components/SelectPage";
+import InputPesquisa from "@/components/admin/InputPesquisa";
+import TabelaCrud from "@/components/admin/TabelaCrud";
+import PaginationTabela from "@/components/admin/PaginationTabela";
+import DialogCupom from "@/components/admin/DialogCupom";
+import SelectPage from "@/components/admin/SelectPage";
 import { 
   Box,
   Heading,
@@ -17,7 +17,7 @@ import api from "@/utils/axios";
 import { toaster } from "@/components/ui/toaster"
 import { verificarToken } from "@/middleware/verificarToken";
 import { useRouter } from 'next/navigation';
-import TrocaCrud from "@/components/TrocaCrud";
+import TrocaCrud from "@/components/admin/TrocaCrud";
 
 export default function Tasks() {
   const [tasks, setTasks] = useState([]);

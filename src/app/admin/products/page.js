@@ -45,15 +45,15 @@ export default function Tasks() {
       }
   }
 
-const buscarCategorias = async () => {
-  try {
-    const response = await api.get('/categories');
-    setCategories(response.data.data);
-    console.log("Categorias carregadas:", response.data.data); 
-  } catch (error) {
-    console.log("Erro ao buscar categorias:", error);
-  }
-};
+  const buscarCategorias = async () => {
+    try {
+      const response = await api.get('/categories');
+      setCategories(response.data.data);
+      console.log("Categorias carregadas:", response.data.data); 
+    } catch (error) {
+      console.log("Erro ao buscar categorias:", error);
+    }
+  };
   
   const router = useRouter();
 
@@ -171,6 +171,13 @@ const buscarCategorias = async () => {
         console.log("ID recebido para exclusão:", id);
         if (confirm("Deseja excluir o produto?")) {
         const taskDeletar = tasks.find((task) => task.id === id);
+        if (!taskDeletar) {
+        toaster.create({
+          title: 'Produto não encontrado.',
+          type: 'error'
+        });
+        return;
+        }
         await api.delete(`/products/${taskDeletar.id}`); 
         const taskExcluido = tasks.filter(products => products.id !== taskDeletar.id);
         if (tasksAtuais.length === 1 && currentPage > 1) {
@@ -253,9 +260,14 @@ const buscarCategorias = async () => {
                 <Flex justify="center" align="center" h="100%">
                   <Image
                     rounded="md"
-                    src={`http://localhost:3333${task.image.replace(/^.*\/public/, '')}`} 
-                    alt={`Imagem do produto ${task.name}`} 
-                    style={{ width: '120px', height: '80px', objectFit: 'cover' }} 
+                    src={
+                      task.image
+                        ? `http://localhost:3333${task.image.replace(/^.*\/public/, '')}`
+                        : '/sem-imagem.png'
+                    }
+                    alt={`Imagem do produto ${task.name}`}
+                    style={{ width: '120px', height: '80px', objectFit: 'cover' }}
+                    onError={(e) => { e.target.src = '/sem-imagem.png'; }}
                   />
                 </Flex>
               )

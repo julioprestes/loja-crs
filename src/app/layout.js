@@ -1,3 +1,4 @@
+import Footer from "@/components/Footer"
 import { Provider } from "@/components/ui/provider"
 
 export default function RootLayout({children}) {

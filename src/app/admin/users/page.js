@@ -2,7 +2,7 @@
 import InputPesquisa from "@/components/admin/InputPesquisa";
 import TabelaCrud from "@/components/admin/TabelaCrud";
 import PaginationTabela from "@/components/admin/PaginationTabela";
-import DialogCreate from "@/components/admin/DialogCreate";
+import DialogUsuario from "@/components/admin/DialogUsuario";
 import SelectPage from "@/components/admin/SelectPage";
 import { 
   Box,
@@ -15,13 +15,19 @@ import {
 import { useState, useEffect } from "react";
 import api from "@/utils/axios";
 import { toaster } from "@/components/ui/toaster"
+import TrocaCrud from "@/components/admin/TrocaCrud";
 import { verificarToken } from "@/middleware/verificarToken";
 import { useRouter } from 'next/navigation';
-import TrocaCrud from "@/components/admin/TrocaCrud";
 
 export default function Tasks() {
   const [tasks, setTasks] = useState([]);
   const [input, setInput] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [username, setUsername] = useState('');
+  const [role, setRole] = useState('');
+  const [cpf, setCpf] = useState('');
+  const [senha, setSenha] = useState('');
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const [editingIndex, setEditingIndex] = useState(null);
@@ -29,17 +35,16 @@ export default function Tasks() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [loadingSave, SetLoadingSave] = useState(false);
   
-  
-  const buscarCategoria = async () => {
+  const buscarUsuario = async () => {
       try {
-        const response = await api.get('/categories')
+        const response = await api.get('/users')
         setTasks(response.data.data)
       } catch (error) {
         
       }
   }
 
-const buscarUsuarioAutenticado = async () => {
+  const buscarUsuarioAutenticado = async () => {
     try {
         const response = await api.get('/users/info-by-token');
         return response.data.data;
@@ -52,28 +57,28 @@ const buscarUsuarioAutenticado = async () => {
 
   useEffect(() => {
     const validarToken = async () => {
-      const valido = await verificarToken();
-      if (!valido) {
+        const valido = await verificarToken();
+        if (!valido) {
         router.push('/login');
         return;
-      }
-      try {
+        }
+        try {
         const usuario = await buscarUsuarioAutenticado();
         if (!usuario || (usuario.role || '').trim().toLowerCase() !== 'admin') {
-          router.push('/login');
-          return;
+            router.push('/login');
+            return;
         }
-        await buscarCategoria();
-      } catch (error) {
+        await buscarUsuario();
+        } catch (error) {
         router.push('/login');
-      }
+        }
     };
 
     validarToken();
   }, []);
   
   const filteredTasks = tasks.filter(task =>
-    task.name.toLowerCase().includes(searchTerm.toLowerCase())
+    task.nome.toLowerCase().includes(searchTerm.toLowerCase())
   );
   useEffect(() => {
     setCurrentPage(1);
@@ -88,28 +93,51 @@ const buscarUsuarioAutenticado = async () => {
       SetLoadingSave(true)
       if (!input.trim()) return;
       if (editingIndex !== null) {
-        const response = await api.patch(`/categories/${editingIndex}`, {
-          name: input,
+        const response = await api.patch(`/users/${editingIndex}`, {
+            nome: input,
+            email: email,
+            cpf: cpf,
+            role: role,
+            password: senha,
+            phone: phone,
+            username: username,
         });
-        await buscarCategoria();
+        await buscarUsuario();
         setInput('');
+        setEmail('');
+        setCpf('');
+        setIdCargo('');
+        setIsEstudante(false);
+        setSenha('');
       } else {
-        const response = await api.post('/categories', {
-          name: input,
+        const response = await api.post('/users', {
+            nome: input,
+            email: email,
+            cpf: cpf,
+            role: role,
+            password: senha,
+            phone: phone,
+            username: username,
         });
         toaster.create({
-          title: 'Categories criado com sucesso.',
+          title: 'Usuário criado com sucesso.',
           type: 'success'
         })
-        await buscarCategoria();
+        await buscarUsuario();
       }
       setIsDialogOpen(false)
       setInput('');
+      setEmail('');
+      setCpf('');
+      setRole('');
+      setSenha('');
+      setPhone('');
+      setUsername('');
       SetLoadingSave(false)
     } catch (error) {
       console.log(error.response?.data || error.message);
       toaster.create({
-        title: error.response?.data?.message || 'Erro ao criar categories.',
+        title: error.response?.data?.message || 'Erro ao criar Usuário.',
         type: 'error'
       });
       SetLoadingSave(false);
@@ -117,36 +145,42 @@ const buscarUsuarioAutenticado = async () => {
   }
 
   const editarTask = (taskEditar) => {
-    console.log("Task recebida:", taskEditar);
+    console.log("Usuario recebido:", taskEditar);
   
     if (!taskEditar) {
-      console.error("Task não encontrada ou inválida.");
+      console.error("Usuario não encontrado ou inválido.");
       return;
     }
   
-    setInput(taskEditar.name || '');
+    setInput(taskEditar.nome || '');
+    setSenha(taskEditar.senha || '');
+    setEmail(taskEditar.email || '');
+    setCpf(taskEditar.cpf || '');
+    setRole(taskEditar.role || '');
+    setUsername(taskEditar.username || '');
+    setPhone(taskEditar.phone || '');
     setEditingIndex(taskEditar.id || null);
     setIsDialogOpen(true);
   };
 
   const excluirTask = async (id) => {
     try {
-      if (confirm("Deseja excluir o categories?")) {
-      const taskDeletar = tasks.find((task) => task.id === id);
-      await api.delete(`/categories/${taskDeletar.id}`); 
-      const taskExcluido = tasks.filter(categories => categories.id !== taskDeletar.id);
-      if (tasksAtuais.length === 1 && currentPage > 1) {
-        setCurrentPage(currentPage - 1);
-      }
-      toaster.create({
-        title: 'Categories excluido com sucesso.',
-        type: 'success'
-      })
-      setTasks(taskExcluido);
-      }
+        if (confirm("Deseja excluir o usuário?")) {
+        const taskDeletar = tasks.find((task) => task.id === id);
+        await api.delete(`/users/${taskDeletar.id}`); 
+        const taskExcluido = tasks.filter(users => users.id !== taskDeletar.id);
+        if (tasksAtuais.length === 1 && currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+        toaster.create({
+            title: 'Usuário excluido com sucesso.',
+            type: 'success'
+        })
+        setTasks(taskExcluido);
+        }
     } catch (error) {
       toaster.create({
-        title: 'Erro ao excluir categories.',
+        title: 'Erro ao excluir Usuário.',
         type: 'error'
       })
     }
@@ -154,9 +188,9 @@ const buscarUsuarioAutenticado = async () => {
 
   return (
     <>
-      <TrocaCrud currentPage="/admin/categories" />
-      <Box p={8}>
-        <Heading mb={4}> CRUD Categorias </Heading>
+      <TrocaCrud currentPage="/admin/users" />
+      <Box p={8}>  
+        <Heading mb={4}> CRUD Usuários </Heading>
         <Grid templateColumns="repeat(4, 1fr)" gap={6} ml={10} mr={-12}>
           <GridItem colSpan={3} ml={9}>
             <InputPesquisa
@@ -172,13 +206,25 @@ const buscarUsuarioAutenticado = async () => {
                 mb={4}
                 l={2}
             > 
-                Criar Categoria
+                Criar Usuário
             </Button>
-            <DialogCreate
-                headers={[editingIndex !== null ? 'Editar Categories' : 'Criar Categories']}
-                buttonName={[editingIndex !== null ? 'Editar Categories' : 'Criar Categories']}
+            <DialogUsuario
+                headers={[editingIndex !== null ? 'Editar users' : 'Criar users']}
+                buttonName={[editingIndex !== null ? 'Editar users' : 'Criar users']}
                 input={input}
                 setInput={setInput}
+                senha={senha}
+                setSenha={setSenha}
+                email={email}
+                setEmail={setEmail}
+                cpf={cpf}
+                setCpf={setCpf}
+                phone={phone}
+                setPhone={setPhone}
+                role={role}
+                setRole={setRole}
+                username={username}
+                setUsername={setUsername}
                 submit={criarTask}
                 editingIndex={editingIndex}
                 isOpen={isDialogOpen}
@@ -186,6 +232,12 @@ const buscarUsuarioAutenticado = async () => {
                   setIsDialogOpen(false);
                   setEditingIndex(null);
                   setInput('');
+                  setEmail('');
+                  setCpf('');
+                  setSenha('');
+                  setUsername('');
+                  setPhone('');
+                  setRole('');
                 }}
                 loadingSave={loadingSave}
             />
@@ -199,7 +251,12 @@ const buscarUsuarioAutenticado = async () => {
             acoes={true}
             headers={[
               {name: 'ID', value: 'id'},
-              {name: 'Nome', value: 'name'},
+              {name: 'Nome', value: 'nome'},
+              {name: 'Email', value: 'email'},
+              {name: 'CPF', value: 'cpf'},
+              {name: 'Username', value: 'username'},
+              {name: 'Cargo', value: 'role'},
+              {name: 'Telefone', value: 'phone'}
             ]}
           />
           <Grid templateColumns="repeat(4, 1fr)">

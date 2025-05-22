@@ -37,7 +37,6 @@ export default function DialogProduto ({
       formData.append("arquivo", file); 
     }
     submit(formData); 
-    onClose();
   };
 
   const categoriesCollection = createListCollection({
@@ -88,7 +87,11 @@ export default function DialogProduto ({
                   size="sm"
                   width="100%"
                   value={idCategory ? [String(idCategory)] : []}
-                  onValueChange={value => setIdCategory(value.value[0])}
+                  onValueChange={value => {
+                    if (value.value && value.value.length > 0) {
+                      setIdCategory(value.value[0]);
+                    }
+                  }}
                 >
                   <Select.HiddenSelect />
                   <Select.Label>Categoria</Select.Label>

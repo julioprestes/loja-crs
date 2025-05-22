@@ -80,20 +80,20 @@ export default function LoginInput({ mandarDadosdofilho }) {
 
   return (
     <Stack>
-      <InputGroup mt="7%" startElement={<FaUser color="black" opacity={0.8} />} w="100%" >
+      <InputGroup mt="7%" startElement={<FaUser color="white" opacity={0.8} />} w="100%" >
         <Input
           variant="outline"
           placeholder="Login"
           onChange={(e) => setEmail(e.target.value)}
-          color="black"
+          color="white"
         />
       </InputGroup>
-      <InputGroup mt="2%" startElement={<FaLock color="black" opacity={0.8} />} w="100%" >
+      <InputGroup mt="2%" startElement={<FaLock color="white" opacity={0.8} />} w="100%" >
         <PasswordInput
           variant="outline"
           placeholder="Senha"
           onChange={(e) => setPassword(e.target.value)}
-          color="black"
+          color="white"
         />
       </InputGroup>
       <Text
@@ -102,7 +102,7 @@ export default function LoginInput({ mandarDadosdofilho }) {
         cursor="pointer"
         opacity={0.8}
         onClick={recuperarSenha}
-        color="blackAlpha.950"
+        color="whiteAlpha.950"
       >
         Esqueceu a senha?
       </Text>
@@ -110,7 +110,7 @@ export default function LoginInput({ mandarDadosdofilho }) {
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
         email={Email}
-        color="blackAlpha.950"
+        color="whiteAlpha.950"
       />
       <Button
         onClick={mandarDados}
@@ -126,22 +126,21 @@ export default function LoginInput({ mandarDadosdofilho }) {
           transition: "0.3s",
         }}
         tabIndex={0}
-        bg="blackAlpha.950"
-        color="white"
+        bg="whiteAlpha.950"
+        color="black"
       >Entrar
       </Button>
-      <Text m="0" mt="1%" mb="1%" textAlign={"center"} color="blackAlpha.950" >OU</Text>
+      <Text m="0" mt="1%" mb="1%" textAlign={"center"} color="whiteAlpha.950" >OU</Text>
       <Button
         onClick={cadastrarDados}
-        mt="5%"
         borderRadius={5}
         _hover={{
           opacity: 0.9,
           transform: "scale(1.01)",
           transition: "0.3s",
         }}
-        bg="blackAlpha.950"
-        color="white"
+        bg="whiteAlpha.950"
+        color="black"
       >Cadastrar
       </Button>
       <Toaster />

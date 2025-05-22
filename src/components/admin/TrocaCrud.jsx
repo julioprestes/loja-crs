@@ -7,6 +7,10 @@ import {
   Portal,
   Flex,
   Link as ChakraLink,
+  Spacer,
+  HStack,
+  Box,
+  Image
 } from "@chakra-ui/react";
 import { useState } from "react";
 import NextLink from "next/link";
@@ -22,6 +26,7 @@ export default function TrocaCrud({ currentPage }) {
     { href: "/admin/cupons", label: "Crud Cupons" },
     { href: "/admin/products", label: "Crud Produtos" },
     { href: "/admin/orders", label: "Crud Pedidos" },
+    { href: "/admin/users", label: "Crud Usuários" }
   ];
 
   return (
@@ -35,10 +40,21 @@ export default function TrocaCrud({ currentPage }) {
           <Drawer.Positioner>
             <Drawer.Content>
               <Drawer.Header>
-                <Drawer.Title>Menu Admin</Drawer.Title>
+                <Box>
+                  <HStack>
+                    <Image
+                      src="/Pizza_Steve.png"
+                      alt="Logo Mercado"
+                      boxSize="40px"
+                      objectFit="contain"
+                    />
+                    <Drawer.Title>Menu Admin</Drawer.Title> 
+                  </HStack>
+                   
+                </Box>
               </Drawer.Header>
               <Drawer.Body>
-                <Flex direction="column" gap={2}>
+                <Flex direction="column" gap={2} height="100%">
                   {pages
                     .filter((page) => page.href !== currentPage)
                     .map((page) => (
@@ -48,11 +64,15 @@ export default function TrocaCrud({ currentPage }) {
                         href={page.href}
                         borderRadius="md"
                         p={2}
-                        _hover={{ bg: "gray.100" }}
+                        _hover={{ bg: "orange.500" }}
                       >
                         {page.label}
                       </ChakraLink>
                     ))}
+                  <Spacer />
+                  <Button as={NextLink} href="/" colorScheme="teal" variant="solid" mr={2} _hover={{ bg: "orange.500" }}>
+                    Home
+                  </Button>
                 </Flex>
               </Drawer.Body>
               <Drawer.Footer>

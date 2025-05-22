@@ -62,9 +62,9 @@ export default function Home() {
         <VStack spacing={5}>
           <Image
             mt={8}
-            src="/logo-mercado.png"
+            src="/logo.png"
             alt="Logo Mercado"
-            boxSize="100px"
+            boxSize="200px"
             objectFit="contain"
             mb={5}
           />
@@ -72,6 +72,7 @@ export default function Home() {
             display="flex"
             justifyContent="center"
             alignItems="center"
+            mt={5}
             mb={8} 
           >
               <Heading color="black" textAlign="center" as="h1" fontSize={40} fontWeight={600} >

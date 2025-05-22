@@ -34,7 +34,7 @@ export default function CadastroInput() {
             email: email,
             password: password,
             cpf: cpf,
-            role: 'usuario',
+            role: 'user',
             username: username,
             phone: phone,
             });

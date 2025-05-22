@@ -1,10 +1,12 @@
 'use client'
-import { Box, Image, Heading, Text, VStack } from "@chakra-ui/react";
+import { Box, Image, Heading, Text, VStack, Button, Link as ChakraLink } from "@chakra-ui/react";
 import React from 'react';
 import LoginInput from "@/components/loginInput";
 import { Toaster, toaster } from "@/components/ui/toaster"
 import axios from "@/utils/axios";
 import { useRouter } from 'next/navigation';
+import NextLink from "next/link";
+
 
 export default function LoginPc() {
   const router = useRouter();
@@ -43,40 +45,51 @@ export default function LoginPc() {
 
   return (
     <Box
-    w="100%" h="100vh" display="flex" justifyContent="center" alignItems="center" 
-    filter="contrast(95%)"
-    bgSize="100% 115%"
-    bgPosition="center"
-    bgRepeat="no-repeat"
-    bg= "whiteAlpha.900"
-  >
-    {/* Remova o Box vazio */}
-    <Box w="50%" h="100vh">
-      <Image
-        width="100%"
-        height="100%"
-        objectFit="cover"
-        src="/mercadin.png"
-        alt="Loading..."
-      />
-    </Box>
-    <Box
-      w="40%"
+      w="100vw"
+      h="100vh"
+      minH="100vh"
+      minW="100vw"
+      position="relative"
       display="flex"
-      justifyContent="center"
+      justifyContent="center"s
       alignItems="center"
+      bgSize="cover"
+      bgPosition="center"
+      bgRepeat="no-repeat"
+      backgroundImage="url('/pizzaria-fundo.jpg')"
     >
-      <VStack align="left" >
-        <Heading textAlign="center" as="h1" fontSize={40} fontWeight={600} color="blackAlpha.950" >
-          Bem-Vindo!
-        </Heading>
-        <Text m="0" fontSize="lg" color="blackAlpha.950" textAlign="center" opacity={0.8} >
-          Cadastre-se no Mercado!
-        </Text>
-        <LoginInput mandarDadosdofilho={receberDadosdoFilho} />
-      </VStack>
+      <Box position="absolute" top={6} right={8} zIndex={2}>
+        <Button as={NextLink} href="/" color="black" bg="white">
+          Voltar à Pizzaria
+        </Button>
+      </Box>
+      <Box w="50%" h="100vh" zIndex={2}></Box>
+      <Box
+        w="40%"
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        zIndex={2}
+      >
+        <VStack align="left" >
+          <Box display="flex" justifyContent="center">
+            <Image
+              src="/Pizza_Steve.png"
+              alt="Logo Steve" 
+              objectFit="contain"
+              boxSize="120px"
+            />
+          </Box>
+          <Heading textAlign="center" as="h1" fontSize={40} fontWeight={600} color="whiteAlpha.950" >
+            Bem-Vindo!
+          </Heading>
+          <Text m="0" fontSize="lg" color="whiteAlpha.950" textAlign="center" opacity={0.8} >
+            Cadastre-se na Pizzaria!
+          </Text>
+          <LoginInput mandarDadosdofilho={receberDadosdoFilho} />
+        </VStack>
+      </Box>
+      <Toaster />
     </Box>
-    <Toaster />
-  </Box>
   );
 } 

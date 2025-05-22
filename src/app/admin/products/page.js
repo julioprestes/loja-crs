@@ -54,28 +54,40 @@ export default function Tasks() {
       console.log("Erro ao buscar categorias:", error);
     }
   };
+
+  const buscarUsuarioAutenticado = async () => {
+    try {
+        const response = await api.get('/users/info-by-token');
+        return response.data.data;
+    } catch (error) {
+        return null;
+    }
+  };
   
   const router = useRouter();
 
+   useEffect(() => {
+  const validarToken = async () => {
+    const valido = await verificarToken();
+    if (!valido) {
+      router.push('/login');
+      return;
+    }
+    try {
+      const usuario = await buscarUsuarioAutenticado();
+      if (!usuario || (usuario.role || '').trim().toLowerCase() !== 'admin') {
+        router.push('/login');
+        return;
+      }
+      await buscarProduto();
+      await buscarCategorias();
+    } catch (error) {
+      router.push('/login');
+    }
+  };
 
-  useEffect(() => {
-    buscarProduto();
-    buscarCategorias();
-
-  }, []);
-
-//   useEffect(() => {
-//     const validarToken = async () => {
-//       const valido = await verificarToken();
-//       if (!valido) {
-//         router.push('/');
-//       } else {
-//         await buscarProduto();
-//       }
-//     };
-
-//     validarToken();
-//   }, []);
+  validarToken();
+}, []);
   
   const filteredTasks = tasks.filter(task =>
     task.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -150,8 +162,6 @@ export default function Tasks() {
   };
 
   const editarTask = (taskEditar) => {
-    console.log("Task recebida:", taskEditar);
-  
     if (!taskEditar) {
       console.error("Task não encontrada ou inválida.");
       return;

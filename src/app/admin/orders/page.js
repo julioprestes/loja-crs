@@ -41,28 +41,42 @@ export default function Tasks() {
     const response = await api.get('/orders');
     setTasks(Array.isArray(response.data.data) ? response.data.data : []);
   } catch (error) {
-    setTasks([]); // Garante que tasks nunca será undefined
+    setTasks([]);
   }
 };
+
+    const buscarUsuarioAutenticado = async () => {
+    try {
+        const response = await api.get('/users/info-by-token');
+        return response.data.data;
+    } catch (error) {
+        return null;
+    }
+  };
 
   const router = useRouter();
 
   useEffect(() => {
-    buscarPedido();
-  }, []);
-  
-//   useEffect(() => {
-//     const validarToken = async () => {
-//       const valido = await verificarToken();
-//       if (!valido) {
-//         router.push('/');
-//       } else {
-//         await buscarPedido();
-//       }
-//     };
+    const validarToken = async () => {
+      const valido = await verificarToken();
+      if (!valido) {
+        router.push('/login');
+        return;
+      }
+      try {
+        const usuario = await buscarUsuarioAutenticado();
+        if (!usuario || (usuario.role || '').trim().toLowerCase() !== 'admin') {
+          router.push('/login');
+          return;
+        }
+        await buscarPedido();
+      } catch (error) {
+        router.push('/login');
+      }
+    };
 
-//     validarToken();
-//   }, []);
+    validarToken();
+  }, []);
   
   const filteredTasks = (tasks || []).filter(task =>
   task.status?.toLowerCase().includes(searchTerm.toLowerCase())

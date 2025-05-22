@@ -42,24 +42,38 @@ export default function Tasks() {
       }
   }
 
+  const buscarUsuarioAutenticado = async () => {
+    try {
+        const response = await api.get('/users/info-by-token');
+        return response.data.data;
+    } catch (error) {
+        return null;
+    }
+  };
+
   const router = useRouter();
 
   useEffect(() => {
-    buscarCupom();
-  }, []);
-  
-//   useEffect(() => {
-//     const validarToken = async () => {
-//       const valido = await verificarToken();
-//       if (!valido) {
-//         router.push('/');
-//       } else {
-//         await buscarCupom();
-//       }
-//     };
+    const validarToken = async () => {
+      const valido = await verificarToken();
+      if (!valido) {
+        router.push('/login');
+        return;
+      }
+      try {
+        const usuario = await buscarUsuarioAutenticado();
+        if (!usuario || (usuario.role || '').trim().toLowerCase() !== 'admin') {
+          router.push('/login');
+          return;
+        }
+        await buscarCupom();
+      } catch (error) {
+        router.push('/login');
+      }
+    };
 
-//     validarToken();
-//   }, []);
+    validarToken();
+  }, []);
   
   const filteredTasks = tasks.filter(task =>
     task.code.toLowerCase().includes(searchTerm.toLowerCase())

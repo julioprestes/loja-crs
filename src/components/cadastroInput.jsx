@@ -77,18 +77,21 @@ export default function CadastroInput() {
         placeholder="Nome"
         value={nome}
         onChange={(e) => setNome(e.target.value)}
+        color="black"
       />
       <Input
         variant="outline"
         placeholder="Usuário (deve ser único)"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
+        color="black"
       />
       <Input
         variant="outline"
         placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
+        color="black"
       />
       <PasswordInput
         placeholder="Senha"
@@ -96,6 +99,7 @@ export default function CadastroInput() {
         mr={2}
         value={password}
         onChange={(e) => setPassword(e.target.value)}
+        color="black"
       />
       <Input
         placeholder="CPF"
@@ -104,6 +108,7 @@ export default function CadastroInput() {
         mr={2}
         value={cpf}
         onChange={(e) => setCpf(e.target.value)}
+        color="black"
       />
       <Input
         placeholder="Telefone"
@@ -112,8 +117,9 @@ export default function CadastroInput() {
         mr={2}
         value={phone}
         onChange={(e) => setPhone(e.target.value)}
+        color="black"
       />
-      <Button onClick={mandarDados} colorScheme="blue">
+      <Button onClick={mandarDados} colorScheme="blue" color="white" bg="black">
         Cadastrar
       </Button>
       <Toaster />

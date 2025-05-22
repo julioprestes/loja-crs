@@ -80,18 +80,20 @@ export default function LoginInput({ mandarDadosdofilho }) {
 
   return (
     <Stack>
-      <InputGroup mt="7%" startElement={<FaUser color="white" opacity={0.8} />} w="100%" >
+      <InputGroup mt="7%" startElement={<FaUser color="black" opacity={0.8} />} w="100%" >
         <Input
           variant="outline"
           placeholder="Login"
           onChange={(e) => setEmail(e.target.value)}
+          color="black"
         />
       </InputGroup>
-      <InputGroup mt="2%" startElement={<FaLock color="white" opacity={0.8} />} w="100%" >
+      <InputGroup mt="2%" startElement={<FaLock color="black" opacity={0.8} />} w="100%" >
         <PasswordInput
           variant="outline"
           placeholder="Senha"
           onChange={(e) => setPassword(e.target.value)}
+          color="black"
         />
       </InputGroup>
       <Text
@@ -100,6 +102,7 @@ export default function LoginInput({ mandarDadosdofilho }) {
         cursor="pointer"
         opacity={0.8}
         onClick={recuperarSenha}
+        color="blackAlpha.950"
       >
         Esqueceu a senha?
       </Text>
@@ -107,6 +110,7 @@ export default function LoginInput({ mandarDadosdofilho }) {
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
         email={Email}
+        color="blackAlpha.950"
       />
       <Button
         onClick={mandarDados}
@@ -122,9 +126,11 @@ export default function LoginInput({ mandarDadosdofilho }) {
           transition: "0.3s",
         }}
         tabIndex={0}
+        bg="blackAlpha.950"
+        color="white"
       >Entrar
       </Button>
-      <Text m="0" mt="1%" mb="1%" textAlign={"center"} >OU</Text>
+      <Text m="0" mt="1%" mb="1%" textAlign={"center"} color="blackAlpha.950" >OU</Text>
       <Button
         onClick={cadastrarDados}
         mt="5%"
@@ -134,6 +140,8 @@ export default function LoginInput({ mandarDadosdofilho }) {
           transform: "scale(1.01)",
           transition: "0.3s",
         }}
+        bg="blackAlpha.950"
+        color="white"
       >Cadastrar
       </Button>
       <Toaster />

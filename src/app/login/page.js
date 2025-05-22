@@ -48,6 +48,7 @@ export default function LoginPc() {
     bgSize="100% 115%"
     bgPosition="center"
     bgRepeat="no-repeat"
+    bg= "whiteAlpha.900"
   >
     {/* Remova o Box vazio */}
     <Box w="50%" h="100vh">
@@ -66,11 +67,10 @@ export default function LoginPc() {
       alignItems="center"
     >
       <VStack align="left" >
-        <Heading color="white" textAlign="center" as="h1" fontSize={40} fontWeight={600} >
-          Bem-Vindo
-          <span style={{ fontFamily: "monospace", fontSize: "1.2em", color: "white" }} >!</span>
+        <Heading textAlign="center" as="h1" fontSize={40} fontWeight={600} color="blackAlpha.950" >
+          Bem-Vindo!
         </Heading>
-        <Text m="0" fontSize="lg" color="white" textAlign="center" opacity={0.8} >
+        <Text m="0" fontSize="lg" color="blackAlpha.950" textAlign="center" opacity={0.8} >
           Cadastre-se no Mercado!
         </Text>
         <LoginInput mandarDadosdofilho={receberDadosdoFilho} />

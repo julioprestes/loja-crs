@@ -78,7 +78,7 @@ export default function Home() {
                 Bem-Vindo!
               </Heading>
           </Box>
-          <Box display="flex" justifyContent="flex-start" w="100%" mb={2}>
+          <Box display="flex" justifyContent="center" w="100%" mb={2}>
             <PesquisaProduto searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
           </Box>
           <Carrossel produtos={produtosFiltrados} categorias={categorias} />

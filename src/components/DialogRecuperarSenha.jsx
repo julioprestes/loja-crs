@@ -30,7 +30,7 @@ export default function DialogRecuperarSenha({
     }
 
     try {
-      const response = await api.post('/usuario/redefinir-senha', {
+      const response = await api.post('/users/redefinir-senha', {
         email,
         codigo,
         novaSenha,

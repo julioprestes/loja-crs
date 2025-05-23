@@ -47,16 +47,18 @@ export default function Home() {
   }, []);
 
   return (
-    <Box
-      backgroundColor="whiteAlpha.950"
-      minHeight="100vh"
-      display="flex"
-      flexDirection="column"
-      backgroundImage="url('/fundopizza.png')"
-      bgSize="cover"
-      bgPosition="center"
-      bgRepeat="no-repeat"
-    >
+      <Box
+        backgroundColor="whiteAlpha.950"
+        minHeight="100%"
+        height="100%"
+        display="flex"
+        flexDirection="column"
+        backgroundImage="url('/fundopizza.png')"
+        bgSize="cover" 
+        bgPosition="center"
+        bgRepeat="no-repeat"
+        bgAttachment="fixed"
+      >
       <Navbar />
       <Box
         flex="1"
@@ -64,10 +66,7 @@ export default function Home() {
         display="flex"
         justifyContent="center"
         filter="contrast(95%)"
-        bgSize="100% 115%"
-        bgPosition="center"
         bgRepeat="no-repeat"
-        bgAttachment="fixed"
       >
         <VStack spacing={5}>
           <Image

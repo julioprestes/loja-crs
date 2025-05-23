@@ -146,8 +146,8 @@ const buscarUsuarioAutenticado = async () => {
       }
     } catch (error) {
       toaster.create({
-        title: 'Erro ao excluir categories.',
-        type: 'error'
+       title: error.response?.data?.message || 'Erro ao excluir categories.',
+       type: 'error'
       })
     }
   }

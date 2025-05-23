@@ -3,7 +3,7 @@ import { Input } from "@chakra-ui/react";
 export default function PesquisaProduto({ searchTerm, setSearchTerm }) {
   return (
     <Input
-      placeholder="Busque por um produto..."
+      placeholder="Busque por uma pizza..."
       value={searchTerm}
       variant="outline"
       onChange={(e) => setSearchTerm(e.target.value)}

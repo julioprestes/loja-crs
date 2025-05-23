@@ -225,7 +225,15 @@ export default function Tasks() {
             <Button 
                 variant="outline" 
                 size="sm" 
-                onClick={() => setIsDialogOpen(true)} 
+                onClick={() => {
+                  setEditingIndex(null);
+                  setInput('');
+                  setDescription('');
+                  setPrice('');
+                  setIdCategory(null);
+                  setFile(null);
+                  setIsDialogOpen(true);
+                }}
                 mb={4}
                 l={2}
             > 

@@ -121,10 +121,7 @@ export default function LoginInput({ mandarDadosdofilho }) {
         }}
         mt="5%"
         borderRadius={5}
-        _hover={{
-          opacity: 0.9,
-          transition: "0.3s",
-        }}
+        _hover={{ bg: "#eb8f34" }}
         tabIndex={0}
         bg="whiteAlpha.950"
         color="black"
@@ -134,11 +131,7 @@ export default function LoginInput({ mandarDadosdofilho }) {
       <Button
         onClick={cadastrarDados}
         borderRadius={5}
-        _hover={{
-          opacity: 0.9,
-          transform: "scale(1.01)",
-          transition: "0.3s",
-        }}
+        _hover={{ bg: "#eb8f34" }}
         bg="whiteAlpha.950"
         color="black"
       >Cadastrar

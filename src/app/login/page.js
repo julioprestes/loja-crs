@@ -59,7 +59,7 @@ export default function LoginPc() {
       backgroundImage="url('/pizzaria-fundo.jpg')"
     >
       <Box position="absolute" top={6} right={8} zIndex={2}>
-        <Button as={NextLink} href="/" color="black" bg="white">
+        <Button as={NextLink} href="/" color="black" bg="white" _hover={{ bg: "#eb8f34" }}>
           Voltar à Pizzaria
         </Button>
       </Box>

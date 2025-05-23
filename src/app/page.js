@@ -47,7 +47,16 @@ export default function Home() {
   }, []);
 
   return (
-    <Box backgroundColor="whiteAlpha.950"minHeight="100vh" display="flex" flexDirection="column">
+    <Box
+      backgroundColor="whiteAlpha.950"
+      minHeight="100vh"
+      display="flex"
+      flexDirection="column"
+      backgroundImage="url('/fundopizza.png')"
+      bgSize="cover"
+      bgPosition="center"
+      bgRepeat="no-repeat"
+    >
       <Navbar />
       <Box
         flex="1"
@@ -58,6 +67,7 @@ export default function Home() {
         bgSize="100% 115%"
         bgPosition="center"
         bgRepeat="no-repeat"
+        bgAttachment="fixed"
       >
         <VStack spacing={5}>
           <Image

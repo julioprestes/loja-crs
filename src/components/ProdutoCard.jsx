@@ -4,7 +4,7 @@ import { MdShoppingCart } from "react-icons/md";
 
 export default function ProdutoCard({ produto }) {
   return (
-    <Card.Root maxW="400px" w="380px" minW="300px" overflow="hidden" bg="#ed7e00">
+    <Card.Root maxW="400px" w="380px" minW="300px" overflow="hidden" bg="#eb8f34"> 
       <HStack align="start" spacing={4} p={4}>
         <Image
           src={`http://localhost:3333${produto.image?.replace(/^.*\/public/, '')}`}

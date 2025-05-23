@@ -48,10 +48,10 @@ export default function Navbar() {
         )}
         {!role && (
           <>
-            <Button as={NextLink} href="/login" colorScheme="teal" variant="solid" mr={2} _hover={{ bg: "orange.500" }}>
+            <Button as={NextLink} href="/login" colorScheme="teal" variant="solid" mr={2} _hover={{ bg: "#eb8f34" }}>
               Login
             </Button>
-            <Button as={NextLink} href="/cadastro" colorScheme="teal" variant="solid" _hover={{ bg: "orange.500" }}>
+            <Button as={NextLink} href="/cadastro" colorScheme="teal" variant="solid" _hover={{ bg: "#eb8f34" }}>
               Cadastro
             </Button>
           </>

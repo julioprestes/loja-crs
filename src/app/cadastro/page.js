@@ -12,28 +12,33 @@ export default function CadastroPage() {
       minW="100vw"
       position="relative"
       display="flex"
-      justifyContent="center"
+      justifyContent="flex-start"
       alignItems="center"
       bg="whiteAlpha.950"
+      backgroundImage="url('/pizzaria-fundo-cadastro.JPG')"
+      bgSize="cover"
+      bgPosition="center"
+      bgRepeat="no-repeat"
+      bgAttachment="fixed"
     >
-      <Box position="absolute" top={6} right={8} zIndex={10}>
+      <Box position="absolute" top={6} left={8} zIndex={10}>
         <HStack>
-          <Text color="black"> Já possui uma conta? </Text>
-          <Button as={NextLink} href="/login" color="white" bg="black">
+          <Text color="white"> Já possui uma conta? </Text>
+          <Button as={NextLink} href="/login" color="black" bg="white" _hover={{ bg: "#eb8f34" }}>
             Fazer Login
           </Button>
         </HStack>
       </Box>
-      <Box w="50%" h="100vh" zIndex={2}></Box>
       <Box
         w="40%"
         display="flex"
         justifyContent="flex-start"
         alignItems="center"
         zIndex={2}
+        ml="20vw"
       >
         <VStack align="left" spacing={4}>
-          <Heading mb={4} fontSize="3xl" color="black">Cadastro</Heading>
+          <Heading mb={4} fontSize="3xl" color="white" textAlign="center">Cadastro</Heading>
           <CadastroInput />
         </VStack>
       </Box>

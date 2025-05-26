@@ -64,13 +64,13 @@ export default function TrocaCrud({ currentPage }) {
                         href={page.href}
                         borderRadius="md"
                         p={2}
-                        _hover={{ bg: "#eb8f34", color: "black" }}
+                        _hover={{ bg: "orange", color: "black" }}
                       >
                         {page.label}
                       </ChakraLink>
                     ))}
                   <Spacer />
-                  <Button as={NextLink} href="/" colorScheme="teal" variant="solid" mr={2} _hover={{ bg: "#eb8f34" }}>
+                  <Button as={NextLink} href="/" colorScheme="teal" variant="solid" mr={2} _hover={{ bg: "orange" }}>
                     Home
                   </Button>
                 </Flex>

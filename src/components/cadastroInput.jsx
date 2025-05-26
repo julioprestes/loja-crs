@@ -119,7 +119,7 @@ export default function CadastroInput() {
         onChange={(e) => setPhone(e.target.value)}
         color="white"
       />
-      <Button onClick={mandarDados} colorScheme="blue" color="black" bg="white" _hover={{ bg: "#eb8f34" }}>
+      <Button onClick={mandarDados} colorScheme="blue" color="black" bg="white" _hover={{ bg: "orange" }}>
         Cadastrar
       </Button>
       <Toaster />

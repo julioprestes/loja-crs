@@ -24,7 +24,7 @@ export default function CadastroPage() {
       <Box position="absolute" top={6} left={8} zIndex={10}>
         <HStack>
           <Text color="white"> Já possui uma conta? </Text>
-          <Button as={NextLink} href="/login" color="black" bg="white" _hover={{ bg: "#eb8f34" }}>
+          <Button as={NextLink} href="/login" color="black" bg="white" _hover={{ bg: "orange" }}>
             Fazer Login
           </Button>
         </HStack>

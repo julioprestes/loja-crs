@@ -58,12 +58,12 @@ export default function Carrossel({ produtos, categorias }) {
               </Carousel.ItemGroup>
               <Carousel.Control>
                 <Carousel.PrevTrigger asChild>
-                  <IconButton color="white" bg="black" _hover={{ bg: "#eb8f34" }}>
+                  <IconButton color="white" bg="black" _hover={{ bg: "orange" }} ml={2}>
                     <LuArrowLeft />
                   </IconButton>
                 </Carousel.PrevTrigger>
                 <Carousel.NextTrigger asChild>
-                  <IconButton color="white" bg="black" ml={1} _hover={{ bg: "#eb8f34" }}>
+                  <IconButton color="white" bg="black" ml={1} _hover={{ bg: "orange" }}>
                     <LuArrowRight />
                   </IconButton>
                 </Carousel.NextTrigger>

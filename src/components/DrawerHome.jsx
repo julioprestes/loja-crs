@@ -1,30 +1,48 @@
-import { Box, Button, Image, HStack, CloseButton, Drawer, Portal, NumberInput, Text, Spacer, Link as ChakraLink, } from "@chakra-ui/react";
+import { Box, Button, Image, HStack, CloseButton, Drawer, Portal, NumberInput, Text, Spacer, Link as ChakraLink } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { MdClose } from "react-icons/md";
 import NextLink from "next/link";
+import api from "@/utils/axios";
+
+
+async function saveCartToBackend(userId, cartItemsArray) {
+  if (!userId) return;
+  try {
+    await api.patch(`/users/${userId}`, {
+      cart: { items: cartItemsArray }
+    });
+  } catch (error) {
+    console.error("Erro ao salvar carrinho no backend:", error);
+  }
+}
 
 export default function DrawerHome({ open, setOpen }) {
   const [cartDrawer, setCartDrawer] = useState([]);
 
   useEffect(() => {
     if (open) {
-      const cartLS = JSON.parse(localStorage.getItem("cart")) || [];
+      const userId = localStorage.getItem("userId");
+      const cartLS = JSON.parse(localStorage.getItem(`cart_${userId}`)) || [];
       setCartDrawer(cartLS);
     }
   }, [open]);
 
-  const handleQuantityChange = (index, value) => {
+  const handleQuantityChange = async (index, value) => {
+    const userId = localStorage.getItem("userId");
     const newCart = [...cartDrawer];
     newCart[index].quantity = Math.max(1, Number(value));
     setCartDrawer(newCart);
-    localStorage.setItem("cart", JSON.stringify(newCart));
+    localStorage.setItem(`cart_${userId}`, JSON.stringify(newCart));
+    await saveCartToBackend(userId, newCart);
   };
 
-  const handleDelete = (index) => {
+  const handleDelete = async (index) => {
+    const userId = localStorage.getItem("userId");
     const newCart = [...cartDrawer];
     newCart.splice(index, 1);
     setCartDrawer(newCart);
-    localStorage.setItem("cart", JSON.stringify(newCart));
+    localStorage.setItem(`cart_${userId}`, JSON.stringify(newCart));
+    await saveCartToBackend(userId, newCart); 
   };
 
   return (
@@ -51,7 +69,7 @@ export default function DrawerHome({ open, setOpen }) {
                     {cartDrawer.length === 0 ? (
                     <Box color="white">Seu carrinho está vazio.</Box>
                     ) : (
-                    cartDrawer.map((item, idx) => (
+                    cartDrawer.map((item, index) => (
                         <Box
                         key={item.id}
                         display="flex"
@@ -75,14 +93,14 @@ export default function DrawerHome({ open, setOpen }) {
                             mr={2}
                             bg="white"
                             color="black"
-                            onValueChange={e => handleQuantityChange(idx, e.value)}
+                            onValueChange={e => handleQuantityChange(index, e.value)}
                         >
                             <NumberInput.Control />
                             <NumberInput.Input />
                         </NumberInput.Root>
                         <Button
                             color="white"
-                            onClick={() => handleDelete(idx)}
+                            onClick={() => handleDelete(index)}
                             bg="red"
                         >
                             <MdClose />
@@ -92,7 +110,7 @@ export default function DrawerHome({ open, setOpen }) {
                     )}
                     <Spacer />
                     <Button as={NextLink} href="/carrinho" colorScheme="teal" variant="solid" mr={2} _hover={{ bg: "orange" }}>
-                    Finalizar compra.
+                    Finalizar compra
                     </Button>
                 </Box>
                 </Drawer.Body>
@@ -107,4 +125,3 @@ export default function DrawerHome({ open, setOpen }) {
     </Drawer.Root>
   );
 }
-    

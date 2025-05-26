@@ -97,7 +97,7 @@ export default function Navbar() {
                 onClick={() => {
                   localStorage.removeItem('token');
                   setRole('');
-                  window.location.reload();
+                  router.push("/");
                 }}
               >
                 <MdLogout />

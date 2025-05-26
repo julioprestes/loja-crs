@@ -13,30 +13,35 @@ export default function LoginPc() {
 
 
   const loginUsuario = async (content) => {
-    router.push('/login');
-    try {
-      const response = await axios.post(`/users/login`, { ...content });
-      if (response.status == 200) {
-        toaster.create({
-          description: "Login realizado com sucesso! Redirecionando...",
-          type: "success",
-        });
-        
-        localStorage.setItem('token', response.data.response);
-        router.push('/');
-      } else {
-        toaster.create({
-          description: "Erro ao fazer login!",
-          type: "error",
-        })
-      }
-    } catch (error) {
+  try {
+    console.log("Tentando login com:", content);
+    const response = await axios.post(`/users/login`, { ...content });
+    console.log("Resposta do backend:", response);
+
+    if (response.status == 200) {
       toaster.create({
-        description: "ERROR!",
+        description: "Login realizado com sucesso! Redirecionando...",
+        type: "success",
+      });
+      // Corrija aqui:
+      localStorage.setItem("token", response.data.response); 
+      localStorage.setItem("userId", response.data.user.id);
+      router.push('/');
+      return;
+    } else {
+      toaster.create({
+        description: "Erro ao fazer login!",
         type: "error",
-      })
+      });
     }
+  } catch (error) {
+    console.error("Erro no login:", error);
+    toaster.create({
+      description: error?.response?.data?.message || "ERROR!",
+      type: "error",
+    });
   }
+}
 
   const receberDadosdoFilho = async (content) => {
     await loginUsuario(content)

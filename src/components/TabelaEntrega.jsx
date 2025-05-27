@@ -64,8 +64,8 @@ export default function TabelaEntrega({items, headers, onAtribuir, acoes, disabl
                   <Stack direction="row">
                     <Tooltip content="Atribuir Entrega">
                       <Button
-                        background="blue"
-                        color="white"
+                        background="orange"
+                        color="black"
                         variant="subtle"
                         size="xs"
                         onClick={() => onAtribuir(cargo)}

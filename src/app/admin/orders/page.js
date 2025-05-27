@@ -24,6 +24,7 @@ export default function Tasks() {
   const [status, setStatus] = useState('');
   const [total, setTotal] = useState('');
   const [idUserCustomer, setIdUserCustomer] = useState('');
+  const [idUserDeliver, setIdUserDeliver] = useState('');
   const [idAddress, setIdAddress] = useState('');
   const [idPayment, setIdPayment] = useState('');
   const [produtos, setProdutos] = useState([]);
@@ -115,20 +116,18 @@ export default function Tasks() {
         idPayment,
       });
 
-      // (Opcional) Atualizar produtos do pedido aqui, se quiser permitir edição dos produtos
 
     } else {
-      // Criar pedido
       const response = await api.post('/orders', {
         status,
         total,
         idUserCustomer,
+        idUserDeliver: null,
         idAddress,
         idPayment,
       });
       orderId = response.data.data.id;
 
-      // Criar cada produto do pedido
       for (const prod of produtos) {
         await api.post('/orders-products', {
           idOrder: orderId,
@@ -152,6 +151,7 @@ export default function Tasks() {
     setStatus('');
     setTotal('');
     setIdUserCustomer('');
+    setIdUserDeliver('');
     setIdAddress('');
     setIdPayment('');
     setProdutos([]);
@@ -181,7 +181,6 @@ export default function Tasks() {
     return;
   }
 
-  // Evita duplicidade de produto
   const jaExiste = produtos.some(
     (p) => String(p.idProduct) === String(produtoAtual.idProduct)
   );
@@ -208,6 +207,7 @@ export default function Tasks() {
     setStatus(taskEditar.status || '');
     setTotal(taskEditar.total || '');
     setIdUserCustomer(taskEditar.idUserCustomer || '');
+    setIdUserDeliver(taskEditar.idUserDeliver || '');
     setIdAddress(taskEditar.idAddress || '');
     setIdPayment(taskEditar.idPayment || '');
     setProdutos(taskEditar.orders_products || []);
@@ -269,6 +269,8 @@ export default function Tasks() {
                 setTotal={setTotal}
                 idUserCustomer={idUserCustomer}
                 setIdUserCustomer={setIdUserCustomer}
+                idUserDeliver={idUserDeliver}
+                setIdUserDeliver={setIdUserDeliver}
                 idAddress={idAddress}
                 setIdAddress={setIdAddress}
                 idPayment={idPayment}
@@ -307,6 +309,7 @@ export default function Tasks() {
               {name: 'Status', value: 'status'},
               {name: 'Total', value: 'total'},
               {name: 'Cliente', value: 'idUserCustomer'},
+              {name: 'Entregador', value: 'idUserDeliver'},
               {name: 'Endereço', value: 'idAddress'},
               {name: 'Pagamento', value: 'idPayment'},
             ]}

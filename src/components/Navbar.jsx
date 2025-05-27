@@ -64,10 +64,30 @@ export default function Navbar() {
           </Button>
         )}
         {role.trim().toLowerCase() === 'deliver' && (
-          <Button as={NextLink} href="/pedidos" variant="outline" mr={2} ml={2} _hover={{ bg: "orange", color: "black" }} >
-            Entregas
-            <MdDeliveryDining />
-          </Button>
+          pathname === "/pedidos" ? (
+            <Button
+              as={NextLink}
+              href="/"
+              variant="outline"
+              mr={2}
+              ml={2}
+              _hover={{ bg: "orange", color: "black" }}
+            >
+              <MdHouse />
+            </Button>
+          ) : (
+            <Button
+              as={NextLink}
+              href="/pedidos"
+              variant="outline"
+              mr={2}
+              ml={2}
+              _hover={{ bg: "orange", color: "black" }}
+            >
+              Entregas
+              <MdDeliveryDining />
+            </Button>
+          )
         )}
         {!role && (
           <>
@@ -83,7 +103,7 @@ export default function Navbar() {
           <>
             {pathname !== "/carrinho" && (
               <Tooltip content="Carrinho de Compras">
-                <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
+                <Button variant="outline" size="sm" onClick={() => setOpen(true)} _hover={{ bg: "orange", color: "black" }}>
                   <MdShoppingCart />
                 </Button>
               </Tooltip>

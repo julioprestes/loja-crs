@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import api from "@/utils/axios";
 import { verificarToken } from "@/middleware/verificarToken";
 import { useRouter } from 'next/navigation';
+import SelectEntrega from "@/components/SelectEntrega";
 
 export default function Pedidos() {
   const [tasks, setTasks] = useState([]);
@@ -115,8 +116,8 @@ export default function Pedidos() {
     return (
         <Box bg="white">
             <Navbar />
-            <Box bg="white">
-               <Heading mt={5} color="black" textAlign="center" size="4xl" > Pedidos </Heading> 
+            <Box bg="white" minH="80vh">
+               <Heading mt={5} color="black" textAlign="center" size="4xl" > Entregas </Heading> 
                <TabelaEntrega
                     items={tasksAtuais}
                     acoes={true}
@@ -130,6 +131,18 @@ export default function Pedidos() {
                     ]}
                     disableAtribuir={pedido => (pedido.status || '').toLowerCase() === 'em entrega'}
                 />
+               <Box display="flex" justifyContent="flex-end" pr={12} mb={2}>
+                 <SelectEntrega
+                   setItensPerPage={setItemsPerPage}
+                   items={[
+                     {name: 5, value: 5},
+                     {name: 10, value: 10},
+                     {name: 15, value: 15},
+                     {name: 20, value: 20},
+                     {name: 25, value: 25},
+                   ]}
+                 />
+               </Box>
             </Box>
             <Footer />
         </Box>

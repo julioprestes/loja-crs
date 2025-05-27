@@ -80,7 +80,7 @@ export default function ProdutoCard({ produto }) {
                   });
                 }
                 localStorage.setItem(cartKey, JSON.stringify(cart));
-                await saveCartToBackend(userId, cart); // <-- Sincroniza com o backend!
+                await saveCartToBackend(userId, cart); 
                 toaster.create({
                   title: 'Produto adicionado ao carrinho.',
                   type: 'success'

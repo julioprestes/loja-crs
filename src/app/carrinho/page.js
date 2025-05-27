@@ -1,12 +1,15 @@
 'use client';
 import { useState, useEffect } from "react";
 import {
-  Box, Heading, Text, Button, Image, Input, VStack, HStack, Flex, 
+  Box, Heading, Text, Button, Image, Input, VStack, HStack, Flex, SimpleGrid, Portal, Select, createListCollection
 } from "@chakra-ui/react";
 import api from "@/utils/axios";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import DialogCarrinho from "@/components/DialogCarrinho.jsx";
+import DialogEnderecos from "@/components/DialogEnderecos.jsx";
+import { useRouter } from "next/navigation";
+
 
 // Função  para salvar o carrinho no backend
 async function saveCartToBackend(userId, cartItemsArray) {
@@ -26,11 +29,25 @@ export default function CarrinhoPage() {
   const [editQuantity, setEditQuantity] = useState(1);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   // Novo estado para cupom do pedido
   const [pedidoCupom, setPedidoCupom] = useState("");
   const [pedidoCupomData, setPedidoCupomData] = useState(null);
   const [pedidoCupomError, setPedidoCupomError] = useState(null);
+
+  // Estados para endereços
+  const [enderecos, setEnderecos] = useState([]);
+  const [selectedEndereco, setSelectedEndereco] = useState(null);
+  const [dialogEnderecoOpen, setDialogEnderecoOpen] = useState(false);
+
+  // Cria a collection para o Select do Chakra 3.0
+  const enderecoCollection = createListCollection({
+    items: enderecos.map(e => ({
+      label: `${e.street}, ${e.numberForget} - ${e.city}`,
+      value: String(e.id),
+    })),
+  });
 
   useEffect(() => {
   async function loadCart() {
@@ -60,6 +77,24 @@ export default function CarrinhoPage() {
   }
   loadCart();
 }, []);
+
+  // Carregar endereços do usuário
+  useEffect(() => {
+    async function loadEnderecos() {
+      const userId = localStorage.getItem("userId");
+      if (!userId) return;
+      try {
+        const res = await api.get(`/addresses`);
+        // Filtra só os endereços do usuário logado
+        const userEnderecos = res.data.data.filter(e => String(e.idUser) === String(userId));
+        setEnderecos(userEnderecos);
+        if (userEnderecos.length > 0) setSelectedEndereco(userEnderecos[0].id);
+      } catch (err) {
+        setEnderecos([]);
+      }
+    }
+    loadEnderecos();
+  }, []);
 
   // Remova lógica de cupom individual do produto do cálculo
   const calculateItemTotal = (item) => {
@@ -121,9 +156,27 @@ export default function CarrinhoPage() {
     }
   };
 
+  // Função para adicionar novo endereço e atualizar lista
+  const handleEnderecoAdded = async () => {
+    setDialogEnderecoOpen(false);
+    // Recarrega endereços
+    const userId = localStorage.getItem("userId");
+    if (!userId) return;
+    try {
+      const res = await api.get(`/addresses`);
+      const userEnderecos = res.data.data.filter(e => String(e.idUser) === String(userId));
+      setEnderecos(userEnderecos);
+      if (userEnderecos.length > 0) setSelectedEndereco(userEnderecos[userEnderecos.length - 1].id);
+    } catch (err) {}
+  };
+
   const finalizarPedido = async () => {
     if (cart.length === 0) {
       alert("Seu carrinho está vazio!");
+      return;
+    }
+    if (!selectedEndereco) {
+      alert("Selecione um endereço para entrega!");
       return;
     }
     setLoading(true);
@@ -131,9 +184,8 @@ export default function CarrinhoPage() {
       const userId = localStorage.getItem("userId");
       const idUserCustomer = userId;
       const idUserDeliver = null;
-      const idAddress = 1;
+      const idAddress = selectedEndereco;
       const idPayment = 1;
-      // Passe o id do cupom se houver
       const idCupom = pedidoCupomData?.id || null;
 
       const orderRes = await api.post("/orders", {
@@ -150,7 +202,7 @@ export default function CarrinhoPage() {
       const idOrder = orderRes.data.data.id;
 
       for (const item of cart) {
-        await api.post("/ordersproducts", {
+        await api.post("/orders-products", {
           priceProducts: item.price,
           quantity: item.quantity,
           idOrder,
@@ -164,7 +216,8 @@ export default function CarrinhoPage() {
       setPedidoCupom("");
       setPedidoCupomData(null);
       setPedidoCupomError(null);
-      alert("Pedido realizado com sucesso!");
+      alert("Seu pedido será preparado!");
+      router.push("/");
     } catch (error) {
       alert("Erro ao finalizar pedido: " + (error.response?.data?.message || error.message));
     }
@@ -174,17 +227,23 @@ export default function CarrinhoPage() {
   return (
     <>
       <Navbar />
-      <Box bg="white" minH="100vh" p={8}>
+      <Box 
+        bg="white" 
+        minH="100vh" 
+        p={8}
+        border="2px solid black"
+      >
         <Heading mb={10} color="black" size="4xl">Itens no Carrinho</Heading>
-        <Flex wrap="wrap" gap={6}>
-          {cart.map((item, index) => (
-            <Box key={index} maxW="490px" maxH="170px" bg="orange" borderRadius="md" p={4}>
+        <HStack align="start" spacing={10} ml={3}>
+          <SimpleGrid columns={3} columnGap="2" rowGap="4">
+            {cart.map((item, index) => (
+            <Box key={index} maxW="490px" maxH="170px" bg="orange" borderRadius="md" boxShadow={'md'} p={4}>
               <Flex>
                 <Image src={item.image} boxSize="120px" objectFit="cover" borderRadius="md" mr={4} />
                 <VStack align="start" spacing={1}>
                   <Text fontWeight="bold" color="black">{item.name}</Text>
                   <Text color="black">Quantidade: {item.quantity}</Text>
-                  <Text color="black">Preço: R${item.price}</Text>
+                  <Text color="black">Preço: R${Number(item.price).toFixed(2)}</Text>
                   <Text color="black">Total: R${calculateItemTotal(item).toFixed(2)}</Text>
                   <HStack>
                     <Button size="sm" color="white" bg="black" onClick={() => editItem(index)}>Editar</Button>
@@ -194,51 +253,102 @@ export default function CarrinhoPage() {
               </Flex>
             </Box>
           ))}
+          </SimpleGrid>
           {/* Card com o Total da Compra */}
-          <Box minW="250px" maxH="fit-content" bg="orange" borderRadius="md" p={4} ml="auto">
-            <Text fontWeight="bold" color="black">Total da Compra</Text>
-            <Text color="black">Itens: {cart.length}</Text>
-            <Input
-              value={pedidoCupom}
-              onChange={e => setPedidoCupom(e.target.value)}
-              mb={2}
-              placeholder="Cupom do pedido"
-              bg="white"
-              color="black"
-              mt={4}
-            />
-            <Button size="sm" color="white" bg="black" mb={2} onClick={verificarCupomPedido}>
-              Aplicar Cupom
-            </Button>
-            {pedidoCupomError && <Text color="red">{pedidoCupomError}</Text>}
-            {pedidoCupomData && (
-              <Text color="green">
-                Cupom aplicado: {pedidoCupomData.code} ({pedidoCupomData.type === "porcentagem" ? `${pedidoCupomData.discount}%` : `R$${pedidoCupomData.discount}`})
+          <VStack ml="auto">
+            <Box minW="250px" maxH="fit-content" bg="orange" boxShadow={'md'} p={4}>
+              <Text fontWeight="bold" color="black">Total da Compra</Text>
+              <Text color="black">Itens: {cart.length}</Text>
+              <Input
+                value={pedidoCupom}
+                onChange={e => setPedidoCupom(e.target.value)}
+                mb={2}
+                placeholder="Cupom do pedido"
+                bg="white"
+                color="black"
+                mt={4}
+              />
+              <Button size="sm" color="white" bg="black" mb={2} onClick={verificarCupomPedido}>
+                Aplicar Cupom
+              </Button>
+              {pedidoCupomError && <Text color="red">{pedidoCupomError}</Text>}
+              {pedidoCupomData && (
+                <Text color="green">
+                  Cupom aplicado: {pedidoCupomData.code} ({pedidoCupomData.type === "porcentagem" ? `${pedidoCupomData.discount}%` : `R$${pedidoCupomData.discount}`})
+                </Text>
+              )}
+              <Text color="black">Desconto: R${descontoPedido.toFixed(2)}</Text>
+              <Text>
+                <Text as="strong" color="black">Total: R${precoTotal}</Text>
               </Text>
-            )}
-            <Text color="black">Desconto: R${descontoPedido.toFixed(2)}</Text>
-            <Text>
-              <Text as="strong" color="black">Total: R${precoTotal}</Text>
-            </Text>
-            <Button
-              bg="black"
-              mt={4}
-              w="100%"
-              onClick={finalizarPedido}
-              isLoading={loading}
-              loadingText="Finalizando..."
-            >
-              <Text color="white">Finalizar Pedido</Text>
-            </Button>
-          </Box>
-        </Flex>
-
+              <Button
+                bg="black"
+                mt={4}
+                w="100%"
+                onClick={finalizarPedido}
+                isLoading={loading}
+                loadingText="Finalizando..."
+              >
+                <Text color="white">Finalizar Pedido</Text>
+              </Button>
+            </Box>
+            <Box minW="250px" maxH="fit-content" bg="orange" boxShadow={'md'} p={4} mt={5}>
+              <Text fontWeight="bold" color="black">Endereço</Text>
+              {/* Select de endereços */}
+              <Select.Root
+                collection={enderecoCollection}
+                width="100%"
+                value={selectedEndereco ? [String(selectedEndereco)] : []}
+                onValueChange={e => setSelectedEndereco(e.value)}
+                mt={3}
+              >
+                <Select.HiddenSelect />
+                <Select.Label>Selecione um endereço</Select.Label>
+                <Select.Control>
+                  <Select.Trigger>
+                    <Select.ValueText placeholder="Selecione um endereço" />
+                  </Select.Trigger>
+                  <Select.IndicatorGroup>
+                    <Select.Indicator />
+                  </Select.IndicatorGroup>
+                </Select.Control>
+                <Portal>
+                  <Select.Positioner>
+                    <Select.Content>
+                      {enderecoCollection.items.map((endereco) => (
+                        <Select.Item item={endereco} key={endereco.value}>
+                          {endereco.label}
+                          <Select.ItemIndicator />
+                        </Select.Item>
+                      ))}
+                    </Select.Content>
+                  </Select.Positioner>
+                </Portal>
+              </Select.Root>
+              <Button
+                mt={3}
+                size="sm"
+                color="white"
+                bg="black"
+                onClick={() => setDialogEnderecoOpen(true)}
+              >
+                Adicionar novo endereço
+              </Button>
+            </Box>
+          </VStack>
+        </HStack>
         <DialogCarrinho
           open={dialogOpen}
           onClose={() => setDialogOpen(false)}
           editQuantity={editQuantity}
           setEditQuantity={setEditQuantity}
           saveEdit={saveEdit}
+        />
+
+        <DialogEnderecos
+          open={dialogEnderecoOpen}
+          onClose={() => setDialogEnderecoOpen(false)}
+          onEnderecoAdded={handleEnderecoAdded}
         />
 
       </Box>

@@ -28,6 +28,7 @@ export default function ProdutoCard({ produto }) {
       display="flex"
       flexDirection="column"
       boxShadow={'md'}
+      borderRadius="0"
     >
       <HStack align="start" spacing={4} p={4} flex={1}>
         <Image

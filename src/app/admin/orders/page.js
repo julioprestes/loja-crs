@@ -27,8 +27,6 @@ export default function Tasks() {
   const [idUserDeliver, setIdUserDeliver] = useState('');
   const [idAddress, setIdAddress] = useState('');
   const [idPayment, setIdPayment] = useState('');
-  const [produtos, setProdutos] = useState([]);
-  const [produtoAtual, setProdutoAtual] = useState({});
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const [editingIndex, setEditingIndex] = useState(null);
@@ -94,10 +92,9 @@ export default function Tasks() {
   try {
     setLoadingSave(true);
 
-    // Validação básica
-    if (!status || !total || !idUserCustomer || !idAddress || !idPayment || produtos.length === 0) {
+    if (!status || !total || !idUserCustomer || !idAddress || !idPayment) {
       toaster.create({
-        title: 'Preencha todos os campos e adicione pelo menos um produto.',
+        title: 'Preencha todos os campos',
         type: 'warning'
       });
       setLoadingSave(false);
@@ -107,11 +104,11 @@ export default function Tasks() {
     let orderId = editingIndex;
 
     if (editingIndex !== null) {
-      // Atualizar pedido
       await api.patch(`/orders/${editingIndex}`, {
         status,
         total,
         idUserCustomer,
+        idUserDeliver,
         idAddress,
         idPayment,
       });
@@ -127,20 +124,7 @@ export default function Tasks() {
         idPayment,
       });
       orderId = response.data.data.id;
-
-      for (const prod of produtos) {
-        await api.post('/orders-products', {
-          idOrder: orderId,
-          idProduct: prod.idProduct,
-          quantity: prod.quantity,  
-          priceProducts: prod.priceProducts,
-        });
-      }
     }
-
-
-    
-
     toaster.create({
       title: editingIndex !== null ? 'Pedido atualizado com sucesso.' : 'Pedido criado com sucesso.',
       type: 'success'
@@ -154,8 +138,6 @@ export default function Tasks() {
     setIdUserDeliver('');
     setIdAddress('');
     setIdPayment('');
-    setProdutos([]);
-    setProdutoAtual({});
     setEditingIndex(null);
     setLoadingSave(false);
 
@@ -166,34 +148,6 @@ export default function Tasks() {
     });
     setLoadingSave(false);
   }
-};
-
-  const adicionarProduto = () => {
-  if (
-    !produtoAtual.idProduct ||
-    !produtoAtual.quantity ||
-    !produtoAtual.priceProducts
-  ) {
-    toaster.create({
-      title: 'Preencha todos os campos do produto.',
-      type: 'warning'
-    });
-    return;
-  }
-
-  const jaExiste = produtos.some(
-    (p) => String(p.idProduct) === String(produtoAtual.idProduct)
-  );
-  if (jaExiste) {
-    toaster.create({
-      title: 'Produto já adicionado.',
-      type: 'warning'
-    });
-    return;
-  }
-
-  setProdutos([...produtos, produtoAtual]);
-  setProdutoAtual({});
 };
 
   const editarTask = (taskEditar) => {
@@ -210,7 +164,6 @@ export default function Tasks() {
     setIdUserDeliver(taskEditar.idUserDeliver || '');
     setIdAddress(taskEditar.idAddress || '');
     setIdPayment(taskEditar.idPayment || '');
-    setProdutos(taskEditar.orders_products || []);
     setEditingIndex(taskEditar.id || null);
     setIsDialogOpen(true);
   };
@@ -275,11 +228,6 @@ export default function Tasks() {
                 setIdAddress={setIdAddress}
                 idPayment={idPayment}
                 setIdPayment={setIdPayment}
-                produtos={produtos}
-                setProdutos={setProdutos}
-                produtoAtual={produtoAtual}
-                setProdutoAtual={setProdutoAtual}
-                adicionarProduto={adicionarProduto}
                 submit={criarTask}
                 editingIndex={editingIndex}
                 isOpen={isDialogOpen}
@@ -291,8 +239,6 @@ export default function Tasks() {
                   setIdUserCustomer('');
                   setIdAddress('');
                   setIdPayment('');
-                  setProdutos([]);
-                  setProdutoAtual({});
                 }}
                 loadingSave={loadingSave}
             />
@@ -308,10 +254,10 @@ export default function Tasks() {
               {name: 'ID', value: 'id'},
               {name: 'Status', value: 'status'},
               {name: 'Total', value: 'total'},
-              {name: 'Cliente', value: 'idUserCustomer'},
-              {name: 'Entregador', value: 'idUserDeliver'},
-              {name: 'Endereço', value: 'idAddress'},
-              {name: 'Pagamento', value: 'idPayment'},
+              {name: 'ID do Cliente', value: 'idUserCustomer'},
+              {name: 'ID do Entregador', value: 'idUserDeliver'},
+              {name: 'ID do Endereço', value: 'idAddress'},
+              {name: 'ID do Tipo de Pagamento', value: 'idPayment'},
             ]}
           />
           <Grid templateColumns="repeat(4, 1fr)">

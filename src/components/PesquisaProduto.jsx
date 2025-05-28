@@ -11,6 +11,7 @@ export default function PesquisaProduto({ searchTerm, setSearchTerm }) {
       w="400px"
       maxW="90vw"
       color="black"
+      outlineColor="black"
     />
   );
 }

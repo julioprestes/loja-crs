@@ -11,8 +11,7 @@ import {
   createListCollection,
 } from "@chakra-ui/react";
 import { MdCheck, MdAdd } from 'react-icons/md';
-import { useEffect, useState, useRef } from "react";
-import api from "@/utils/axios";
+
 
 
 
@@ -30,11 +29,6 @@ export default function DialogPedido({
   setIdAddress,
   idPayment,
   setIdPayment,
-  produtos,
-  setProdutos,
-  produtoAtual,
-  setProdutoAtual,
-  adicionarProduto,
   submit,
   editingIndex,
   isOpen,
@@ -42,24 +36,6 @@ export default function DialogPedido({
   loadingSave
 }) {
 
-  const [produtosApi, setProdutosApi] = useState([]);
-  const contentRef = useRef(null);
-
-
-  useEffect(() => {
-  if (isOpen) {
-    api.get('/products')
-      .then(res => setProdutosApi(res.data.data || []))
-      .catch(() => setProdutosApi([]));
-  }
-}, [isOpen]);
-
-  const produtosCollection = createListCollection({
-    items: produtosApi.map(prod => ({
-      label: `${prod.name} (ID: ${prod.id})`,
-      value: String(prod.id),
-    })),
-  });
 
   return (
     <Dialog.Root open={isOpen} onClose={onClose}>
@@ -104,56 +80,6 @@ export default function DialogPedido({
                   value={idPayment}
                   onChange={e => setIdPayment(e.target.value)}
                 />
-                <HStack>
-                  <Select.Root
-                    collection={produtosCollection}
-                    value={produtoAtual.idProduct || ''}
-                    onValueChange={value =>
-                      setProdutoAtual({ ...produtoAtual, idProduct: value })
-                    }
-                    size="sm"
-                  >
-                    <Select.HiddenSelect />
-                    <Select.Label>Produto</Select.Label>
-                    <Select.Control>
-                      <Select.Trigger>
-                        <Select.ValueText placeholder="Selecione o Produto" />
-                      </Select.Trigger>
-                      <Select.IndicatorGroup>
-                        <Select.Indicator />
-                      </Select.IndicatorGroup>
-                    </Select.Control>
-                    <Portal container={contentRef}>
-                      <Select.Positioner>
-                        <Select.Content>
-                          {produtosCollection.items.map((item) => (
-                            <Select.Item item={item} key={item.value}>
-                              {item.label}
-                            </Select.Item>
-                          ))}
-                        </Select.Content>
-                      </Select.Positioner>
-                    </Portal>
-                  </Select.Root>
-                  <Input
-                    placeholder="Qtd"
-                    value={produtoAtual.quantity || ''}
-                    onChange={e => setProdutoAtual({ ...produtoAtual, quantity: e.target.value })}
-                  />
-                  <Input
-                    placeholder="Preço"
-                    value={produtoAtual.priceProducts || ''}
-                    onChange={e => setProdutoAtual({ ...produtoAtual, priceProducts: e.target.value })}
-                  />
-                  <Button onClick={adicionarProduto} leftIcon={<MdAdd />}>Add</Button>
-                </HStack>
-                <VStack align="start" w="100%">
-                  {produtos.map((p, idx) => (
-                    <Flex key={idx} justify="space-between" w="100%">
-                      <span>Produto: {p.idProduct} | Qtd: {p.quantity} | Preço: {p.priceProducts}</span>
-                    </Flex>
-                  ))}
-                </VStack>
               </VStack>
               <Flex mb={4}>
                 <Button

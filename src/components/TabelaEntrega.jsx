@@ -2,7 +2,7 @@ import { Table, Stack, Button, Box } from "@chakra-ui/react"
 import { MdOutlineDeliveryDining } from "react-icons/md";
 import { Tooltip } from "@/components/ui/tooltip"
 
-export default function TabelaEntrega({items, headers, onAtribuir, acoes, disableAtribuir}) {
+export default function TabelaEntrega({items, headers, onAtribuir, onEntregar, acoes, disableAtribuir}) {
   return (
     <Box display="flex" justifyContent="center" width="100%" py={8} background="white">
       <Table.Root width="90%" size="sm" boxShadow="md">
@@ -68,7 +68,10 @@ export default function TabelaEntrega({items, headers, onAtribuir, acoes, disabl
                         color="black"
                         variant="subtle"
                         size="xs"
-                        onClick={() => onAtribuir(cargo)}
+                        onClick={() => {
+                          if (disableAtribuir && disableAtribuir(cargo)) return; 
+                          onAtribuir(cargo);
+                        }}
                         isDisabled={disableAtribuir && disableAtribuir(cargo)}
                         opacity={disableAtribuir && disableAtribuir(cargo) ? 0.5 : 1}
                         cursor={disableAtribuir && disableAtribuir(cargo) ? "not-allowed" : "pointer"}
@@ -76,6 +79,16 @@ export default function TabelaEntrega({items, headers, onAtribuir, acoes, disabl
                         <MdOutlineDeliveryDining />
                       </Button>
                     </Tooltip>
+                    {(cargo.status || '').toLowerCase() === 'em entrega' && (
+                      <Button
+                        color="white"
+                        bg="green"
+                        size="xs"
+                        onClick={() => onEntregar(cargo)}
+                      >
+                        Entregue
+                      </Button>
+                    )}
                   </Stack>
                 )}
               </Table.Cell>

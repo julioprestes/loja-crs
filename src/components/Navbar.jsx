@@ -63,7 +63,7 @@ export default function Navbar() {
             <MdAdminPanelSettings />
           </Button>
         )}
-        {role.trim().toLowerCase() === 'deliver' && (
+        {['admin', 'deliver'].includes(role.trim().toLowerCase()) && (
           pathname === "/pedidos" ? (
             <Button
               as={NextLink}

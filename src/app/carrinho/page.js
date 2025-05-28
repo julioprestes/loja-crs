@@ -301,15 +301,16 @@ export default function CarrinhoPage() {
                 value={selectedEndereco ? [String(selectedEndereco)] : []}
                 onValueChange={e => setSelectedEndereco(e.value)}
                 mt={3}
+                color="black"
               >
                 <Select.HiddenSelect />
-                <Select.Label>Selecione um endereço</Select.Label>
+                <Select.Label bg="orange">Selecione um endereço</Select.Label>
                 <Select.Control>
-                  <Select.Trigger>
-                    <Select.ValueText placeholder="Selecione um endereço" />
+                  <Select.Trigger bg="white">
+                    <Select.ValueText placeholder="Selecione um endereço" bg="white"/>
                   </Select.Trigger>
                   <Select.IndicatorGroup>
-                    <Select.Indicator />
+                    <Select.Indicator color="black"/>
                   </Select.IndicatorGroup>
                 </Select.Control>
                 <Portal>

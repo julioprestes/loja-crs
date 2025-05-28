@@ -74,7 +74,10 @@ export default function Pedidos() {
       }
       try {
         const usuario = await buscarUsuarioAutenticado();
-        if (!usuario || (usuario.role || '').trim().toLowerCase() !== ('admin' && 'deliver')){
+        if (
+          !usuario ||
+          !['admin', 'deliver'].includes((usuario.role || '').trim().toLowerCase())
+        ) {
           router.push('/login');
           return;
         }
@@ -113,6 +116,18 @@ export default function Pedidos() {
     }
   };
 
+  const pedidoEntregue = async (pedido) => {
+    if ((pedido.status || '').toLowerCase() === 'em entrega') {
+      try {
+        await api.delete(`/orders/${pedido.id}`);
+        await buscarPedido();
+        alert(`Pedido ${pedido.id} entregue com sucesso!`);
+      } catch (error) {
+        alert("Erro ao entregar pedido.");
+      }
+    }
+  }
+
     return (
         <Box bg="white">
             <Navbar />
@@ -122,6 +137,7 @@ export default function Pedidos() {
                     items={tasksAtuais}
                     acoes={true}
                     onAtribuir={atribuirEntrega}
+                    onEntregar={pedidoEntregue}
                     headers={[
                         {name: 'ID do Pedido', value: 'id'},
                         {name: 'Status', value: 'status'},
@@ -129,7 +145,9 @@ export default function Pedidos() {
                         {name: 'Endereço', value: 'idAddress'},
                         {name: 'Pagamento', value: 'idPayment'},
                     ]}
-                    disableAtribuir={pedido => (pedido.status || '').toLowerCase() === 'em entrega'}
+                    disableAtribuir={pedido =>
+                      ['em entrega', 'pedido entregue'].includes((pedido.status || '').toLowerCase())
+                    }
                 />
                <Box display="flex" justifyContent="flex-end" pr={12} mb={2}>
                  <SelectEntrega

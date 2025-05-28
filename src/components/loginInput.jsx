@@ -83,7 +83,7 @@ export default function LoginInput({ mandarDadosdofilho }) {
       <InputGroup mt="7%" startElement={<FaUser color="white" opacity={0.8} />} w="100%" >
         <Input
           variant="outline"
-          placeholder="Login"
+          placeholder="Email"
           onChange={(e) => setEmail(e.target.value)}
           color="white"
         />

@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Spacer, Link as ChakraLink, Image, HStack } from "@chakra-ui/react";
+import { Box, Button, Flex, Spacer, Link as ChakraLink, Image, HStack, Text } from "@chakra-ui/react";
 import { Tooltip } from "@/components/ui/tooltip"
 import NextLink from "next/link";
 import React, { useEffect, useState } from "react";
@@ -40,13 +40,21 @@ export default function Navbar() {
             boxSize="40px"
             objectFit="contain"
           />
-          Steve Pizza
+          <Text
+            cursor="pointer"
+            onClick={() => {
+              router.push("/");
+            }}
+          >
+            Steve Pizza
+          </Text>
         </HStack>
       </Box>
       <Spacer />
       <>
-        {pathname === "/carrinho" && (
-          <Button
+        {pathname !== "/" && (
+          <Tooltip content="Página Inicial">
+            <Button
             as={NextLink}
             href="/"
             variant="outline"
@@ -56,6 +64,7 @@ export default function Navbar() {
           >
             <MdHouse />
           </Button>
+          </Tooltip>
         )}
         {role.trim().toLowerCase() === 'admin' && (
           <Button as={NextLink} href="/admin/categories" variant="outline" mr={2} ml={2} _hover={{ bg: "orange", color: "black" }} >
@@ -64,18 +73,7 @@ export default function Navbar() {
           </Button>
         )}
         {['admin', 'deliver'].includes(role.trim().toLowerCase()) && (
-          pathname === "/pedidos" ? (
-            <Button
-              as={NextLink}
-              href="/"
-              variant="outline"
-              mr={2}
-              ml={2}
-              _hover={{ bg: "orange", color: "black" }}
-            >
-              <MdHouse />
-            </Button>
-          ) : (
+          pathname === "/pedidos" ? null : (
             <Button
               as={NextLink}
               href="/pedidos"
@@ -103,7 +101,7 @@ export default function Navbar() {
           <>
             {pathname !== "/carrinho" && (
               <Tooltip content="Carrinho de Compras">
-                <Button variant="outline" size="sm" onClick={() => setOpen(true)} _hover={{ bg: "orange", color: "black" }}>
+                <Button variant="outline" onClick={() => setOpen(true)} _hover={{ bg: "orange", color: "black" }}>
                   <MdShoppingCart />
                 </Button>
               </Tooltip>

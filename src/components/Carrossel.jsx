@@ -28,7 +28,7 @@ export default function Carrossel({ produtos, categorias }) {
             <h2 style={{ fontSize: "2.5rem", color: "#000", marginTop: 12 }}>
               <ChakraLink
                 as={NextLink}
-                href={`/${arrumaLink(categoria.name)}`}
+                href={`/menu/${arrumaLink(categoria.name)}`}
                 _hover={{ textDecoration: "underline" }}
                 style={{ color: "#000"}}
               >

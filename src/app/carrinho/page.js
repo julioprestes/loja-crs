@@ -1,14 +1,16 @@
 'use client';
 import { useState, useEffect } from "react";
 import {
-  Box, Heading, Text, Button, Image, Input, VStack, HStack, Flex, SimpleGrid, Portal, Select, createListCollection
+  Box, Heading, Text, Button, IconButton, Image, Input, NumberInput, VStack, HStack, Flex, SimpleGrid, Portal, Select, createListCollection
 } from "@chakra-ui/react";
 import api from "@/utils/axios";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import DialogCarrinho from "@/components/DialogCarrinho.jsx";
+import { MdOutlineCheck, MdOutlineAdd   } from "react-icons/md";
 import DialogEnderecos from "@/components/DialogEnderecos.jsx";
 import { useRouter } from "next/navigation";
+import { LuMinus, LuPlus } from "react-icons/lu"
+import { Tooltip } from "@/components/ui/tooltip"
 
 
 // Função  para salvar o carrinho no backend
@@ -25,9 +27,6 @@ async function saveCartToBackend(userId, cartItemsArray) {
 
 export default function CarrinhoPage() {
   const [cart, setCart] = useState([]);
-  const [editIndex, setEditIndex] = useState(null);
-  const [editQuantity, setEditQuantity] = useState(1);
-  const [dialogOpen, setDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -49,17 +48,13 @@ export default function CarrinhoPage() {
     })),
   });
 
-  useEffect(() => {
+useEffect(() => {
   async function loadCart() {
     const userId = localStorage.getItem("userId");
-    console.log("userId:", userId);
     if (!userId) return;
-
     const localCart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || [];
-    console.log("localCart:", localCart);
     try {
       const res = await api.get(`/users/${userId}`);
-      console.log("API response:", res.data);
       const backendCart = res.data.data.cart?.items || [];
       let finalCart = [];
       if (backendCart && backendCart.length > 0) {
@@ -71,7 +66,6 @@ export default function CarrinhoPage() {
       }
       setCart(finalCart);
     } catch (err) {
-      console.error("Erro ao carregar carrinho:", err);
       setCart(localCart);
     }
   }
@@ -122,20 +116,14 @@ export default function CarrinhoPage() {
     await saveCartToBackend(userId, newCart);
   };
 
-  const editItem = (index) => {
-    setEditIndex(index);
-    setEditQuantity(cart[index].quantity);
-    setDialogOpen(true);
-  };
-
-  const saveEdit = async () => {
-    let newCart = [...cart];
-    newCart[editIndex].quantity = editQuantity;
-    setCart(newCart);
+  const handleQuantityChange = async (index, value) => {
     const userId = localStorage.getItem("userId");
+    if (!userId) return;
+    const newCart = [...cart];
+    newCart[index].quantity = Math.max(1, Number(value));
+    setCart(newCart);
     localStorage.setItem(`cart_${userId}`, JSON.stringify(newCart));
     await saveCartToBackend(userId, newCart);
-    setDialogOpen(false);
   };
 
   // Função para verificar cupom do pedido
@@ -225,52 +213,91 @@ export default function CarrinhoPage() {
   };
 
   return (
-    <>
+    <Box bg="white">
       <Navbar />
       <Box 
         bg="white" 
         minH="100vh" 
         p={8}
-        border="2px solid black"
       >
         <Heading mb={10} color="black" size="4xl">Itens no Carrinho</Heading>
         <HStack align="start" spacing={10} ml={3}>
-          <SimpleGrid columns={3} columnGap="2" rowGap="4">
+          <SimpleGrid columns={1} columnGap="2" rowGap="4">
             {cart.map((item, index) => (
-            <Box key={index} maxW="490px" maxH="170px" bg="orange" borderRadius="md" boxShadow={'md'} p={4}>
+            <Box key={index} maxW="1000px" maxH="170px" w="900px" bg="orange.300" boxShadow={'md'}  p={4}>
               <Flex>
-                <Image src={item.image} boxSize="120px" objectFit="cover" borderRadius="md" mr={4} />
-                <VStack align="start" spacing={1}>
-                  <Text fontWeight="bold" color="black">{item.name}</Text>
-                  <Text color="black">Quantidade: {item.quantity}</Text>
-                  <Text color="black">Preço: R${Number(item.price).toFixed(2)}</Text>
-                  <Text color="black">Total: R${calculateItemTotal(item).toFixed(2)}</Text>
-                  <HStack>
-                    <Button size="sm" color="white" bg="black" onClick={() => editItem(index)}>Editar</Button>
-                    <Button size="sm" color="white" bg="black" onClick={() => deleteItem(item.id)}>Excluir</Button>
+                <Image src={item.image} w="180px" h="140px" objectFit="cover" borderRadius="md" mr={4} />
+                <HStack align="center" spacing={16}>
+                  <VStack align="start">
+                    <Text fontWeight="bold" color="black" mr={5} fontSize="2xl">{item.name}</Text>
+                    <Text
+                      cursor="pointer"
+                      color="black"
+                      onClick={() => deleteItem(item.id)}
+                      _hover={{ textDecoration: "underline" }}
+                    >
+                      Remover
+                    </Text>
+                  </VStack>
+                  <NumberInput.Root
+                      value={item.quantity}
+                      min={1}
+                      ml={4}
+                      mr={8}
+                      width="100px"
+                      unstyled
+                      spinOnPress={false}
+                      onValueChange={e => handleQuantityChange(index, e.value)}
+                  >
+                      <HStack gap="2">
+                    <NumberInput.DecrementTrigger asChild>
+                      <IconButton variant="ghost" size="sm" color="black" _hover={{ bg: "orange.200" }}>
+                        <LuMinus />
+                      </IconButton>
+                    </NumberInput.DecrementTrigger>
+                    <NumberInput.ValueText textAlign="center" color="black" fontSize="lg" minW="3ch" />
+                    <NumberInput.IncrementTrigger asChild>
+                      <IconButton variant="ghost" size="sm" color="black" _hover={{ bg: "orange.200" }}>
+                        <LuPlus />
+                      </IconButton>
+                    </NumberInput.IncrementTrigger>
                   </HStack>
-                </VStack>
+                </NumberInput.Root>
+                  <Text color="black">
+                    <Text as="span" fontWeight="bold" color="black">Total:</Text> R$ {calculateItemTotal(item).toFixed(2)}
+                  </Text>
+                </HStack>
               </Flex>
             </Box>
           ))}
           </SimpleGrid>
           {/* Card com o Total da Compra */}
-          <VStack ml="auto">
-            <Box minW="250px" maxH="fit-content" bg="orange" boxShadow={'md'} p={4}>
-              <Text fontWeight="bold" color="black">Total da Compra</Text>
-              <Text color="black">Itens: {cart.length}</Text>
-              <Input
+          <VStack ml="auto" spacing={6}>
+            <Box
+              minW="600px"
+              maxH="fit-content"
+              bg="white" 
+              boxShadow="md"
+              p={4}
+              border="5px solid"
+              borderColor="orange.300" 
+            >
+              <VStack spacing={6}>
+                <Text fontWeight="bold" color="black" fontSize="2xl">Pedido</Text>
+              <HStack>
+                <Input
                 value={pedidoCupom}
                 onChange={e => setPedidoCupom(e.target.value)}
-                mb={2}
                 placeholder="Cupom do pedido"
-                bg="white"
+                variant="flushed"
                 color="black"
-                mt={4}
               />
-              <Button size="sm" color="white" bg="black" mb={2} onClick={verificarCupomPedido}>
-                Aplicar Cupom
-              </Button>
+              <Tooltip content="Aplicar Cupom">
+                <Button size="sm" color="white" bg="green" onClick={verificarCupomPedido}>
+                  <MdOutlineCheck />
+                </Button>
+              </Tooltip>
+              </HStack>
               {pedidoCupomError && <Text color="red">{pedidoCupomError}</Text>}
               {pedidoCupomData && (
                 <Text color="green">
@@ -278,82 +305,80 @@ export default function CarrinhoPage() {
                 </Text>
               )}
               <Text color="black">Desconto: R${descontoPedido.toFixed(2)}</Text>
-              <Text>
-                <Text as="strong" color="black">Total: R${precoTotal}</Text>
+              <HStack>
+                <Text color="black">Itens: {cart.length} /</Text>
+                  <Text color="black">
+                <Text as="strong" color="black">Total: </Text>R${precoTotal}
               </Text>
+              </HStack>
+              <HStack>
+                <Select.Root
+                  collection={enderecoCollection}
+                  width="100%"
+                  value={selectedEndereco ? [String(selectedEndereco)] : []}
+                  onValueChange={e => setSelectedEndereco(e.value)}
+                  color="black"
+                >
+                  <Select.HiddenSelect />
+                  <Select.Label>Selecione um endereço:</Select.Label>
+                  <Select.Control>
+                    <Select.Trigger bg="white">
+                      <Select.ValueText placeholder="Selecione um endereço" bg="white"/>
+                    </Select.Trigger>
+                    <Select.IndicatorGroup>
+                      <Select.Indicator color="black"/>
+                    </Select.IndicatorGroup>
+                  </Select.Control>
+                  <Portal>
+                    <Select.Positioner>
+                      <Select.Content>
+                        {enderecoCollection.items.map((endereco) => (
+                          <Select.Item item={endereco} key={endereco.value}>
+                            {endereco.label}
+                            <Select.ItemIndicator />
+                          </Select.Item>
+                        ))}
+                      </Select.Content>
+                    </Select.Positioner>
+                  </Portal>
+                </Select.Root>
+                <Tooltip content="Novo Endereço">
+                  <Button
+                    mt={6}
+                    size="sm"
+                    color="white"
+                    bg="green"
+                    onClick={() => setDialogEnderecoOpen(true)}
+                  >
+                    <MdOutlineAdd />
+                  </Button>
+                </Tooltip>
+                
+              </HStack>
               <Button
                 bg="black"
-                mt={4}
-                w="100%"
+                mt={6}
+                w="50%"
+                h="50px"
                 onClick={finalizarPedido}
                 isLoading={loading}
                 loadingText="Finalizando..."
-              >
-                <Text color="white">Finalizar Pedido</Text>
-              </Button>
-            </Box>
-            <Box minW="250px" maxH="fit-content" bg="orange" boxShadow={'md'} p={4} mt={5}>
-              <Text fontWeight="bold" color="black">Endereço</Text>
-              {/* Select de endereços */}
-              <Select.Root
-                collection={enderecoCollection}
-                width="100%"
-                value={selectedEndereco ? [String(selectedEndereco)] : []}
-                onValueChange={e => setSelectedEndereco(e.value)}
-                mt={3}
-                color="black"
-              >
-                <Select.HiddenSelect />
-                <Select.Label bg="orange">Selecione um endereço</Select.Label>
-                <Select.Control>
-                  <Select.Trigger bg="white">
-                    <Select.ValueText placeholder="Selecione um endereço" bg="white"/>
-                  </Select.Trigger>
-                  <Select.IndicatorGroup>
-                    <Select.Indicator color="black"/>
-                  </Select.IndicatorGroup>
-                </Select.Control>
-                <Portal>
-                  <Select.Positioner>
-                    <Select.Content>
-                      {enderecoCollection.items.map((endereco) => (
-                        <Select.Item item={endereco} key={endereco.value}>
-                          {endereco.label}
-                          <Select.ItemIndicator />
-                        </Select.Item>
-                      ))}
-                    </Select.Content>
-                  </Select.Positioner>
-                </Portal>
-              </Select.Root>
-              <Button
-                mt={3}
-                size="sm"
+                _hover={{ bg: "orange", color: "black" }}
                 color="white"
-                bg="black"
-                onClick={() => setDialogEnderecoOpen(true)}
               >
-                Adicionar novo endereço
+                Finalizar Pedido
               </Button>
+              </VStack>
             </Box>
           </VStack>
         </HStack>
-        <DialogCarrinho
-          open={dialogOpen}
-          onClose={() => setDialogOpen(false)}
-          editQuantity={editQuantity}
-          setEditQuantity={setEditQuantity}
-          saveEdit={saveEdit}
-        />
-
         <DialogEnderecos
           open={dialogEnderecoOpen}
           onClose={() => setDialogEnderecoOpen(false)}
           onEnderecoAdded={handleEnderecoAdded}
         />
-
       </Box>
       <Footer />
-    </>
+    </Box>
   );
 }

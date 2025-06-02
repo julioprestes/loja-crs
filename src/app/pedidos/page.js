@@ -90,9 +90,13 @@ export default function Pedidos() {
     validarToken();
   }, []);
   
-  const filteredTasks = (tasks || []).filter(task =>
-  task.status?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredTasks = (tasks || [])
+    .filter(task =>
+      task.status?.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .filter(task =>
+      (task.status || '').toLowerCase() !== 'entregue'
+    );
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
@@ -119,7 +123,9 @@ export default function Pedidos() {
   const pedidoEntregue = async (pedido) => {
     if ((pedido.status || '').toLowerCase() === 'em entrega') {
       try {
-        await api.delete(`/orders/${pedido.id}`);
+        await api.patch(`/orders/${pedido.id}`, {
+          status: "Entregue"
+        });
         await buscarPedido();
         alert(`Pedido ${pedido.id} entregue com sucesso!`);
       } catch (error) {

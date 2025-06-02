@@ -28,6 +28,14 @@ export default function CadastroInput() {
       return;
     }
 
+    if (!email.includes('@')) {
+      toaster.create({
+        title: "Por favor, insira um e-mail válido.",
+        type: "error"
+      });
+      return;
+    }
+
     try {
         const response = await api.post('/users', {
             nome: nome,

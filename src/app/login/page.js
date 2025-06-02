@@ -13,6 +13,13 @@ export default function LoginPc() {
 
 
   const loginUsuario = async (content) => {
+      if (!content.email || !content.email.includes('@')) {
+        toaster.create({
+          description: "Por favor, insira um e-mail válido.",
+          type: "error",
+        });
+        return;
+      }
   try {
     console.log("Tentando login com:", content);
     const response = await axios.post(`/users/login`, { ...content });

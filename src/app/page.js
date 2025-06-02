@@ -92,9 +92,9 @@ export default function Home() {
             <PesquisaProduto searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
           </Box>
           <Carrossel produtos={produtosFiltrados} categorias={categorias} />
-          <Toaster />
         </VStack>
       </Box>
+      <Toaster />
       <Footer />
     </Box>
      

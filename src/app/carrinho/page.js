@@ -11,9 +11,8 @@ import DialogEnderecos from "@/components/DialogEnderecos.jsx";
 import { useRouter } from "next/navigation";
 import { LuMinus, LuPlus } from "react-icons/lu"
 import { Tooltip } from "@/components/ui/tooltip"
+import { Toaster, toaster } from "@/components/ui/toaster"
 
-
-// Função  para salvar o carrinho no backend
 async function saveCartToBackend(userId, cartItemsArray) {
   if (!userId) return;
   try {
@@ -21,7 +20,7 @@ async function saveCartToBackend(userId, cartItemsArray) {
       cart: { items: cartItemsArray }
     });
   } catch (error) {
-    console.error("Erro ao salvar carrinho no backend:", error);
+    console.error("Erro ao salvar carrinho:", error);
   }
 }
 
@@ -29,18 +28,13 @@ export default function CarrinhoPage() {
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-
-  // Novo estado para cupom do pedido
   const [pedidoCupom, setPedidoCupom] = useState("");
   const [pedidoCupomData, setPedidoCupomData] = useState(null);
   const [pedidoCupomError, setPedidoCupomError] = useState(null);
-
-  // Estados para endereços
   const [enderecos, setEnderecos] = useState([]);
   const [selectedEndereco, setSelectedEndereco] = useState(null);
   const [dialogEnderecoOpen, setDialogEnderecoOpen] = useState(false);
 
-  // Cria a collection para o Select do Chakra 3.0
   const enderecoCollection = createListCollection({
     items: enderecos.map(e => ({
       label: `${e.street}, ${e.numberForget} - ${e.city}`,
@@ -79,7 +73,6 @@ useEffect(() => {
       if (!userId) return;
       try {
         const res = await api.get(`/addresses`);
-        // Filtra só os endereços do usuário logado
         const userEnderecos = res.data.data.filter(e => String(e.idUser) === String(userId));
         setEnderecos(userEnderecos);
         if (userEnderecos.length > 0) setSelectedEndereco(userEnderecos[0].id);
@@ -147,7 +140,6 @@ useEffect(() => {
   // Função para adicionar novo endereço e atualizar lista
   const handleEnderecoAdded = async () => {
     setDialogEnderecoOpen(false);
-    // Recarrega endereços
     const userId = localStorage.getItem("userId");
     if (!userId) return;
     try {
@@ -160,11 +152,17 @@ useEffect(() => {
 
   const finalizarPedido = async () => {
     if (cart.length === 0) {
-      alert("Seu carrinho está vazio!");
+      toaster.create({
+        description: "Seu carrinho está vazio!",
+        type: "error",
+      });
       return;
     }
     if (!selectedEndereco) {
-      alert("Selecione um endereço para entrega!");
+      toaster.create({
+        description: "Selecione um endereço para entrega!",
+        type: "error",
+      });
       return;
     }
     setLoading(true);
@@ -204,10 +202,18 @@ useEffect(() => {
       setPedidoCupom("");
       setPedidoCupomData(null);
       setPedidoCupomError(null);
-      alert("Seu pedido será preparado!");
-      router.push("/");
+      toaster.create({
+        description: "Seu pedido será preparado!",
+        type: "success",
+      });
+      setTimeout(() => {
+        router.push("/");
+      }, 2000);
     } catch (error) {
-      alert("Erro ao finalizar pedido: " + (error.response?.data?.message || error.message));
+      toaster.create({
+        description: "Erro ao finalizar pedido: " + (error.response?.data?.message || error.message),
+        type: "error",
+      });
     }
     setLoading(false);
   };
@@ -234,7 +240,7 @@ useEffect(() => {
                       cursor="pointer"
                       color="black"
                       onClick={() => deleteItem(item.id)}
-                      _hover={{ textDecoration: "underline" }}
+                      _hover={{ textDecoration: "underline", color: "red" }}
                     >
                       Remover
                     </Text>
@@ -271,7 +277,7 @@ useEffect(() => {
             </Box>
           ))}
           </SimpleGrid>
-          {/* Card com o Total da Compra */}
+          {/* box Total da Compra */}
           <VStack ml="auto" spacing={6}>
             <Box
               minW="600px"
@@ -283,91 +289,105 @@ useEffect(() => {
               borderColor="orange.300" 
             >
               <VStack spacing={6}>
-                <Text fontWeight="bold" color="black" fontSize="2xl">Pedido</Text>
-              <HStack>
-                <Input
-                value={pedidoCupom}
-                onChange={e => setPedidoCupom(e.target.value)}
-                placeholder="Cupom do pedido"
-                variant="flushed"
-                color="black"
-              />
-              <Tooltip content="Aplicar Cupom">
-                <Button size="sm" color="white" bg="green" onClick={verificarCupomPedido}>
-                  <MdOutlineCheck />
-                </Button>
-              </Tooltip>
-              </HStack>
-              {pedidoCupomError && <Text color="red">{pedidoCupomError}</Text>}
-              {pedidoCupomData && (
-                <Text color="green">
-                  Cupom aplicado: {pedidoCupomData.code} ({pedidoCupomData.type === "porcentagem" ? `${pedidoCupomData.discount}%` : `R$${pedidoCupomData.discount}`})
+                <Text fontWeight="bold" color="black" fontSize="2xl" mb={2}>
+                  Pedido
                 </Text>
-              )}
-              <Text color="black">Desconto: R${descontoPedido.toFixed(2)}</Text>
-              <HStack>
-                <Text color="black">Itens: {cart.length} /</Text>
-                  <Text color="black">
-                <Text as="strong" color="black">Total: </Text>R${precoTotal}
-              </Text>
-              </HStack>
-              <HStack>
-                <Select.Root
-                  collection={enderecoCollection}
-                  width="100%"
-                  value={selectedEndereco ? [String(selectedEndereco)] : []}
-                  onValueChange={e => setSelectedEndereco(e.value)}
+                <HStack>
+                  <Input
+                  value={pedidoCupom}
+                  onChange={e => setPedidoCupom(e.target.value)}
+                  placeholder="Cupom do pedido"
+                  variant="flushed"
                   color="black"
-                >
-                  <Select.HiddenSelect />
-                  <Select.Label>Selecione um endereço:</Select.Label>
-                  <Select.Control>
-                    <Select.Trigger bg="white">
-                      <Select.ValueText placeholder="Selecione um endereço" bg="white"/>
-                    </Select.Trigger>
-                    <Select.IndicatorGroup>
-                      <Select.Indicator color="black"/>
-                    </Select.IndicatorGroup>
-                  </Select.Control>
-                  <Portal>
-                    <Select.Positioner>
-                      <Select.Content>
-                        {enderecoCollection.items.map((endereco) => (
-                          <Select.Item item={endereco} key={endereco.value}>
-                            {endereco.label}
-                            <Select.ItemIndicator />
-                          </Select.Item>
-                        ))}
-                      </Select.Content>
-                    </Select.Positioner>
-                  </Portal>
-                </Select.Root>
-                <Tooltip content="Novo Endereço">
-                  <Button
-                    mt={6}
-                    size="sm"
-                    color="white"
-                    bg="green"
-                    onClick={() => setDialogEnderecoOpen(true)}
-                  >
-                    <MdOutlineAdd />
+                />
+                <Tooltip content="Aplicar Cupom">
+                  <Button size="sm" color="white" bg="green" onClick={verificarCupomPedido}>
+                    <MdOutlineCheck />
                   </Button>
                 </Tooltip>
-                
-              </HStack>
-              <Button
-                bg="black"
-                mt={6}
-                w="50%"
-                h="50px"
-                onClick={finalizarPedido}
-                isLoading={loading}
-                loadingText="Finalizando..."
-                _hover={{ bg: "orange", color: "black" }}
-                color="white"
-              >
-                Finalizar Pedido
-              </Button>
+                </HStack>
+                {pedidoCupomError && <Text color="red">{pedidoCupomError}</Text>}
+                {pedidoCupomData && (
+                  <Text color="green">
+                    Cupom aplicado: {pedidoCupomData.code} ({pedidoCupomData.type === "porcentagem" ? `${pedidoCupomData.discount}%` : `R$${pedidoCupomData.discount}`})
+                  </Text>
+                )}
+                <Text color="black">Desconto: R${descontoPedido.toFixed(2)}</Text>
+                <HStack>
+                  <Text color="black">Itens: {cart.length} /</Text>
+                    <Text color="black">
+                  <Text as="strong" color="black">Total: </Text>R${precoTotal}
+                </Text>
+                </HStack>
+                <HStack>
+                  <Select.Root
+                    collection={enderecoCollection}
+                    width="100%"
+                    value={selectedEndereco ? [String(selectedEndereco)] : []}
+                    onValueChange={e => setSelectedEndereco(e.value)}
+                    color="black"
+                  >
+                    <Select.HiddenSelect />
+                    <Select.Label>Selecione um endereço:</Select.Label>
+                    <Select.Control>
+                      <Select.Trigger bg="white">
+                        <Select.ValueText placeholder="Selecione um endereço" bg="white"/>
+                      </Select.Trigger>
+                      <Select.IndicatorGroup>
+                        <Select.Indicator color="black"/>
+                      </Select.IndicatorGroup>
+                    </Select.Control>
+                    <Portal>
+                      <Select.Positioner>
+                        <Select.Content>
+                          {enderecoCollection.items.map((endereco) => (
+                            <Select.Item item={endereco} key={endereco.value}>
+                              {endereco.label}
+                              <Select.ItemIndicator />
+                            </Select.Item>
+                          ))}
+                        </Select.Content>
+                      </Select.Positioner>
+                    </Portal>
+                  </Select.Root>
+                  <Tooltip content="Novo Endereço">
+                    <Button
+                      mt={6}
+                      size="sm"
+                      color="white"
+                      bg="green"
+                      onClick={() => setDialogEnderecoOpen(true)}
+                    >
+                      <MdOutlineAdd />
+                    </Button>
+                  </Tooltip>
+                  
+                </HStack>
+                <Flex align="center" width="100%">
+                  <Box flex="1" />
+                  <Button
+                    bg="black"
+                    mt={6}
+                    h="50px"
+                    minW="200px"
+                    onClick={finalizarPedido}
+                    isLoading={loading}
+                    loadingText="Finalizando..."
+                    _hover={{ bg: "orange", color: "black" }}
+                    color="white"
+                  >
+                    Finalizar Pedido
+                  </Button>
+                  <Box flex="1" display="flex" justifyContent="flex-end">
+                    <Image
+                      src="/Pizza_Steve.png"
+                      alt="Logo Steve"
+                      objectFit="contain"
+                      boxSize="100px"
+                      ml={4}
+                    />
+                  </Box>
+                </Flex>
               </VStack>
             </Box>
           </VStack>
@@ -379,6 +399,7 @@ useEffect(() => {
         />
       </Box>
       <Footer />
+      <Toaster />
     </Box>
   );
 }

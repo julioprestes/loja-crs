@@ -14,6 +14,7 @@
     "@chakra-ui/react": "^3.19.1",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@stripe/stripe-js": "^7.3.1",
     "axios": "^1.9.0",
     "bcrypt": "^6.0.0",
     "framer-motion": "^12.12.1",
@@ -26,6 +27,7 @@
     "react-icons": "^5.5.0",
     "react-slick": "^0.30.3",
     "slick-carousel": "^1.8.1",
+    "stripe": "^18.2.1",
     "use-mask-input": "^3.4.2"
   },
   "devDependencies": {

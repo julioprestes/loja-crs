@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { LuMinus, LuPlus } from "react-icons/lu"
 import { Tooltip } from "@/components/ui/tooltip"
 import { Toaster, toaster } from "@/components/ui/toaster"
+import { finalizarPedidoStripe } from "@/components/finalizarPedidoStripe";
 
 async function saveCartToBackend(userId, cartItemsArray) {
   if (!userId) return;
@@ -151,71 +152,20 @@ useEffect(() => {
   };
 
   const finalizarPedido = async () => {
-    if (cart.length === 0) {
-      toaster.create({
-        description: "Seu carrinho está vazio!",
-        type: "error",
-      });
-      return;
-    }
-    if (!selectedEndereco) {
-      toaster.create({
-        description: "Selecione um endereço para entrega!",
-        type: "error",
-      });
-      return;
-    }
-    setLoading(true);
-    try {
-      const userId = localStorage.getItem("userId");
-      const idUserCustomer = userId;
-      const idUserDeliver = null;
-      const idAddress = selectedEndereco;
-      const idPayment = 1;
-      const idCupom = pedidoCupomData?.id || null;
-
-      const orderRes = await api.post("/orders", {
-        status: "pendente",
-        total: parseFloat(precoTotal),
-        totalDiscount: descontoPedido,
-        idUserCustomer,
-        idUserDeliver,
-        idAddress,
-        idPayment,
-        idCupom,
-      });
-
-      const idOrder = orderRes.data.data.id;
-
-      for (const item of cart) {
-        await api.post("/orders-products", {
-          priceProducts: item.price,
-          quantity: item.quantity,
-          idOrder,
-          idProduct: item.id,
-        });
-      }
-
-      setCart([]);
-      localStorage.setItem(`cart_${userId}`, JSON.stringify([]));
-      await saveCartToBackend(userId, []);
-      setPedidoCupom("");
-      setPedidoCupomData(null);
-      setPedidoCupomError(null);
-      toaster.create({
-        description: "Seu pedido será preparado!",
-        type: "success",
-      });
-      setTimeout(() => {
-        router.push("/");
-      }, 2000);
-    } catch (error) {
-      toaster.create({
-        description: "Erro ao finalizar pedido: " + (error.response?.data?.message || error.message),
-        type: "error",
-      });
-    }
-    setLoading(false);
+    await finalizarPedidoStripe({
+      cart,
+      selectedEndereco,
+      precoTotal,
+      descontoPedido,
+      pedidoCupomData,
+      saveCartToBackend,
+      setCart,
+      setPedidoCupom,
+      setPedidoCupomData,
+      setPedidoCupomError,
+      toaster,
+      setLoading,
+    });
   };
 
   return (
@@ -373,7 +323,7 @@ useEffect(() => {
                     onClick={finalizarPedido}
                     isLoading={loading}
                     loadingText="Finalizando..."
-                    _hover={{ bg: "orange", color: "black" }}
+                    _hover={{ bg: "orange", color: "black", transform: "translateY(-4px)" }}
                     color="white"
                   >
                     Finalizar Pedido
@@ -385,6 +335,7 @@ useEffect(() => {
                       objectFit="contain"
                       boxSize="100px"
                       ml={4}
+                      animation="bounce"
                     />
                   </Box>
                 </Flex>
